@@ -1,0 +1,267 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["jsonProtocol"]
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String       @id @default(uuid())
+  name          String?
+  email         String?      @unique
+  emailVerified DateTime?
+  image         String?
+  tournaments   Tournament[]
+
+  accounts     Account[]
+  sessions     Session[]
+  Registration Registration[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// TOURNAMENT
+
+model Tournament {
+  id                   String     @id @default(uuid())
+  discipline           Discipline @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
+  disciplineId         String
+  name                 String     @db.VarChar(30)
+  full_name            String?    @db.VarChar(80)
+  description          String?
+  rules                String?
+  status               String     @default("pending")
+  participant_type     String
+  organization         String?
+  contact              String?
+  discord              String?
+  website              String?
+  online               Boolean?
+  location             String?
+  country              String?
+  size                 Int
+  prize                String?
+  scheduled_date_start String?
+  scheduled_date_end   String?
+  timezone             String
+  public               Boolean?
+  // logo
+  platforms            String[]
+  featured             Boolean    @default(false)
+  archived             Boolean    @default(false)
+  match_report_enabled Boolean    @default(false)
+
+  // Registration
+  registration_enabled                   Boolean @default(false)
+  registration_opening_datetime          String?
+  registration_closing_datetime          String?
+  registration_auto_accept               Boolean @default(false)
+  registration_notification_enabled      Boolean @default(false)
+  registration_participant_email_enabled Boolean @default(false)
+  registration_request_message           String?
+  registration_acceptance_message        String?
+  registration_refusal_message           String?
+  registration_terms_enabled             Boolean @default(false)
+  registration_terms_url                 String?
+  registration_permanent_team_mandatory  Boolean @default(false)
+
+  // Participant
+  check_in_enabled                    Boolean @default(false)
+  check_in_participant_enabled        Boolean @default(false)
+  check_in_participant_start_datetime String?
+  check_in_participant_end_datetime   String?
+  team_min_size                       Int
+  team_max_size                       Int
+
+  created_at   DateTime       @default(now())
+  user         User           @relation(fields: [userId], references: [id])
+  userId       String
+  participants Participant[]
+  Stage        Stage[]
+  Group        Group[]
+  Round        Round[]
+  Bracket      Bracket[]
+  Ranking      Ranking[]
+  Registration Registration[]
+}
+
+model Discipline {
+  id                  String       @id
+  name                String
+  short_name          String
+  copyrights          String
+  platforms_available String[]
+  teamsize            Json
+  Tournament          Tournament[]
+}
+
+model Registration {
+  id                     String      @id @default(uuid())
+  tournament             Tournament  @relation(fields: [tournamentId], references: [id])
+  tournamentId           String
+  participant            Participant @relation(fields: [participantId], references: [id])
+  participantId          String
+  user                   User        @relation(fields: [userId], references: [id])
+  userId                 String
+  custom_user_identifier String?     @db.VarChar(100)
+  email                  String?     @db.VarChar(180)
+  type                   String
+  status                 String      @default("pending")
+  name                   String      @db.VarChar(40)
+  custom_fields          Json
+  created_at             DateTime    @default(now())
+  lineup                 Json[]
+}
+
+model Participant {
+  id                     String         @id @default(uuid())
+  email                  String?        @db.VarChar(180)
+  name                   String         @db.VarChar(40)
+  user_id                String?
+  custom_user_identifier String?        @db.VarChar(100)
+  checked_in             Boolean        @default(false)
+  created_at             DateTime       @default(now())
+  type                   String
+  tournament             Tournament     @relation(fields: [tournamentId], references: [id])
+  tournamentId           String
+  lineup                 Json[]
+  Registration           Registration[]
+}
+
+// model Lineup {
+//   id                     String      @id @default(uuid())
+//   name                   String
+//   custom_user_identifier String?
+//   user_id                String?
+//   email                  String?
+//   participant            Participant @relation(fields: [participantId], references: [id])
+//   participantId          String
+// }
+
+// STRUCTURE 
+
+model Stage {
+  id                     String     @id @default(uuid())
+  tournament             Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId           String
+  number                 Int
+  name                   String     @db.VarChar(30)
+  type                   String
+  closed                 Boolean    @default(false)
+  settings               Json
+  match_settings         Json?
+  auto_placement_enabled Boolean    @default(false)
+  Group                  Group[]
+  Round                  Round[]
+  Bracket                Bracket[]
+  Ranking                Ranking[]
+}
+
+model Group {
+  id             String     @id @default(uuid())
+  stage          Stage      @relation(fields: [stageId], references: [id])
+  stageId        String
+  number         Int
+  name           String     @db.VarChar(30)
+  closed         Boolean    @default(false)
+  settings       Json
+  match_settings Json
+  tournament     Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId   String
+  Round          Round[]
+  Bracket        Bracket[]
+  Ranking        Ranking[]
+}
+
+model Round {
+  id             String     @id @default(uuid())
+  stage          Stage      @relation(fields: [stageId], references: [id])
+  stageId        String
+  group          Group      @relation(fields: [groupId], references: [id])
+  groupId        String
+  tournament     Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId   String
+  number         Int
+  name           String     @db.VarChar(30)
+  closed         Boolean    @default(false)
+  settings       Json
+  match_settings Json
+  Bracket        Bracket[]
+}
+
+model Bracket {
+  id                 String     @id @default(uuid())
+  tournament         Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId       String
+  stage              Stage      @relation(fields: [stageId], references: [id])
+  stageId            String
+  group              Group      @relation(fields: [groupId], references: [id])
+  groupId            String
+  round              Round      @relation(fields: [roundId], references: [id])
+  roundId            String
+  number             Int
+  type               String
+  status             String     @default("pending")
+  scheduled_datetime DateTime?
+  played_at          DateTime?
+  depth              Int
+  branch             String?
+  opponents          Json[]
+}
+
+model Ranking {
+  id           String     @id @default(uuid())
+  group        Group      @relation(fields: [groupId], references: [id])
+  groupId      String
+  number       Int
+  position     Int
+  rank         Int?
+  participant  Json
+  points       Int
+  properties   Json
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId String
+  stage        Stage      @relation(fields: [stageId], references: [id])
+  stageId      String
+}
