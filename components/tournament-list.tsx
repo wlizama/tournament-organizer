@@ -20,7 +20,6 @@ export default function TournamentList() {
     error,
     isLoading,
   } = useSWR("/api/tournaments", fetcher);
-  // console.log(tournaments);
 
   return (
     <div className="-mx-4 mt-8 ring-1 ring-gray-300 sm:mx-0 rounded bg-white">

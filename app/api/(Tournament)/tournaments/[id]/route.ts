@@ -150,7 +150,7 @@ export async function DELETE(request: Request, { params }: Params) {
   }
 }
 
-export async function verifyCurrentUserHasAccessToTournament(id: string) {
+async function verifyCurrentUserHasAccessToTournament(id: string) {
   const session = await getServerSession(authOptions);
   const count = await prisma.tournament.count({
     where: {

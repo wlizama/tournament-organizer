@@ -1,14 +1,16 @@
-import { SingleEliminationConfig } from "@/components/stage-type-configs/single-elimination";
+import { DoubleEliminationConfig } from "@/components/stages/stage-type-configs/double-elimination";
+import { GauntletConfig } from "@/components/stages/stage-type-configs/gauntlet";
+import { SingleEliminationConfig } from "@/components/stages/stage-type-configs/single-elimination";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 
-async function getStage(stageId: string, tournamentId: string) {
-  return await prisma.stage.findFirst({
-    where: {
-      id: stageId,
-      tournamentId: tournamentId,
-    },
-  });
+async function getStages(stageId: string, tournamentId: string) {
+  return await prisma.$transaction([
+    prisma.stage.findMany({ where: { tournamentId: tournamentId } }),
+    prisma.stage.findFirst({
+      where: { id: stageId, tournamentId: tournamentId },
+    }),
+  ]);
 }
 
 interface Params {
@@ -19,7 +21,9 @@ interface Params {
 }
 
 export default async function EditStageSettings({ params }: Params) {
-  const stage = await getStage(params.stageId, params.tournamentId);
+  const data = await getStages(params.stageId, params.tournamentId);
+  const stages = data[0];
+  const stage = data[1];
 
   if (!stage) {
     // return notFound
@@ -27,6 +31,33 @@ export default async function EditStageSettings({ params }: Params) {
   }
 
   if (stage.type === "single_elimination") {
-    return <></>;
+    return (
+      <SingleEliminationConfig
+        stage={stage}
+        stages={stages}
+        tournamentId={params.tournamentId}
+      />
+    );
   }
+
+  if (stage.type === "double_elimination") {
+    return (
+      <DoubleEliminationConfig
+        stage={stage}
+        stages={stages}
+        tournamentId={params.tournamentId}
+      />
+    );
+  }
+
+  if (stage.type === "gauntlet") {
+    return (
+      <GauntletConfig
+        stage={stage}
+        stages={stages}
+        tournamentId={params.tournamentId}
+      />
+    );
+  }
+  return;
 }

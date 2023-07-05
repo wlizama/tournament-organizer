@@ -169,16 +169,6 @@ model Participant {
   Registration           Registration[]
 }
 
-// model Lineup {
-//   id                     String      @id @default(uuid())
-//   name                   String
-//   custom_user_identifier String?
-//   user_id                String?
-//   email                  String?
-//   participant            Participant @relation(fields: [participantId], references: [id])
-//   participantId          String
-// }
-
 // STRUCTURE 
 
 model Stage {

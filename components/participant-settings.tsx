@@ -180,7 +180,7 @@ export default function ParticipantSettings({
             </div>
           </div>
         )}
-        <div className="-mx-4 mt-8 ring-1 ring-gray-300 sm:mx-0 rounded bg-white">
+        <div className="-mx-4 mt-8 shadow sm:mx-0 rounded bg-white">
           <div className="py-3.5 px-6 text-left text-2xl">
             <form onSubmit={submitData} method="PATCH">
               <Tabs defaultValue="general" className="w-full mt-2">

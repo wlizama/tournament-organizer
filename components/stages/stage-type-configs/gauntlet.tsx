@@ -1,9 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect } from "react";
 import { BsFillQuestionCircleFill } from "react-icons/bs";
-import { TbPlus } from "react-icons/tb";
+import { TbPencil, TbPlus } from "react-icons/tb";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -13,14 +12,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Listbox, Transition } from "@headlessui/react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import {
+  CheckCircleIcon,
+  CheckIcon,
+  ChevronUpDownIcon,
+} from "@heroicons/react/20/solid";
+import { Stage } from "@prisma/client";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
 interface Props {
-  stagesCount: number;
+  stage: any;
+  stages: Stage[];
   tournamentId: string;
 }
 
@@ -35,35 +40,38 @@ interface MatchOption {
   [key: string]: { value: string; label: string }[] | Record<string, any>;
 }
 
-export function SingleEliminationConfig({ stagesCount, tournamentId }: Props) {
-  const [number, setNumber] = useState(stagesCount + 1);
-  const [name, setName] = useState("Playoffs");
-  const [autoPlacement, setAutoPlacement] = useState(false);
+const verboseNames: Record<string, string> = {
+  calculation: "Calculation",
+  interrupt: "Automatically end the match when a winner is known?",
+  nb_match_sets: "Maximum number of games",
+};
+const descriptions: Record<string, string> = {
+  none: "Set every score and result manually",
+  score:
+    "Set the games scores and the system calculates the games results. The match score is the number of games won and determines the match winner.",
+  outcome:
+    "Set the games results. The match score is calculated from the number of games won and determines the match winner.",
+};
 
-  const router = useRouter();
-  const type = "single_elimination";
-
-  const verboseNames: Record<string, string> = {
-    calculation: "Calculation",
-    interrupt: "Automatically end the match when a winner is known?",
-    nb_match_sets: "Maximum number of games",
-  };
-  const descriptions: Record<string, string> = {
-    none: "Set every score and result manually",
-    score:
-      "Set the games scores and the system calculates the games results. The match score is the number of games won and determines the match winner.",
-    outcome:
-      "Set the games results. The match score is calculated from the number of games won and determines the match winner.",
-  };
+export function GauntletConfig({ stage, stages, tournamentId }: Props) {
+  const type = "gauntlet";
+  const stageNumbers = stages.map((stage: any) => stage.number);
+  const lastStageNumber = stageNumbers[stageNumbers.length - 1];
+  const [number, setNumber] = useState(
+    stage?.number || lastStageNumber + 1 || 1
+  );
+  const [numberError, setNumberError] = useState<string | null>(null);
+  const [name, setName] = useState(stage?.name || "Gauntlet");
+  const [autoPlacement, setAutoPlacement] = useState(
+    stage?.auto_placement_enabled || false
+  );
   const [settings, setSettings] = useState({
-    size: 0,
-    third_decider: false,
-    threshold: 0,
+    size: stage?.settings.size || 0,
   });
   const [matchSettings, setMatchSettings] = useState<MatchSettings>({
     format: {
-      type: "",
-      options: {},
+      type: stage?.match_settings.format.type || "",
+      options: stage?.match_settings.format.options || {},
     },
   });
   const [matchOptions] = useState<MatchOption>({
@@ -144,6 +152,16 @@ export function SingleEliminationConfig({ stagesCount, tournamentId }: Props) {
       ],
     },
   });
+  const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
+
+  useEffect(() => {
+    const isUpdated = localStorage.getItem("updated");
+    if (isUpdated) {
+      setUpdateSuccess(true);
+      localStorage.removeItem("updated");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleTypeChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const { value } = e.target;
@@ -170,29 +188,104 @@ export function SingleEliminationConfig({ stagesCount, tournamentId }: Props) {
     }));
   }
 
-  const submitData = async (e: React.SyntheticEvent) => {
-    try {
-      const body = {
-        tournamentId,
-        number,
-        name,
-        type,
-        settings,
-        matchSettings,
-        autoPlacement,
-      };
-      const res = await fetch(`/api/stages`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (res.ok) {
-        // router.replace logic here
-        // console.log("Created stage successfully");
-        router.push(`/tournaments/${tournamentId}/stages`);
+  function validateNumber(value: number) {
+    if (stage) {
+      if (value !== stage.number && stageNumbers.includes(Number(value))) {
+        return "This stage number is already taken in this tournament";
       }
-    } catch (error) {
-      console.error(error);
+    } else {
+      if (stageNumbers.includes(Number(value))) {
+        return "This stage number is already taken in this tournament";
+      }
+    }
+    return null;
+  }
+
+  const submitData = async (e: React.SyntheticEvent) => {
+    const numberError = validateNumber(number);
+    setNumberError(numberError);
+
+    if (numberError) {
+      e.preventDefault();
+    }
+
+    if (!numberError) {
+      try {
+        if (stage) {
+          e.preventDefault();
+          const body = {
+            number,
+            name,
+            settings,
+            matchSettings,
+            autoPlacement,
+          };
+          const res = await fetch(`/api/stages/${stage.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          if (res.ok) {
+            localStorage.setItem("updated", "true");
+            window.location.reload();
+          }
+        } else {
+          e.preventDefault();
+          const body = {
+            tournamentId,
+            number,
+            name,
+            type,
+            settings,
+            matchSettings,
+            autoPlacement,
+          };
+          const res = await fetch(`/api/stages`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          if (res.ok) {
+            localStorage.setItem("created", "true");
+            window.location.href = `/tournaments/${tournamentId}/stages`;
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const updateStageAndBack = async (e: React.SyntheticEvent) => {
+    const numberError = validateNumber(number);
+    setNumberError(numberError);
+
+    if (numberError) {
+      e.preventDefault();
+    }
+
+    if (!numberError) {
+      try {
+        e.preventDefault();
+        const body = {
+          number,
+          name,
+          settings,
+          matchSettings,
+          autoPlacement,
+        };
+        const res = await fetch(`/api/stages/${stage.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (res.ok) {
+          localStorage.setItem("updated", "true");
+          window.location.href = `/tournaments/${tournamentId}/stages`;
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -201,15 +294,36 @@ export function SingleEliminationConfig({ stagesCount, tournamentId }: Props) {
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 md:px-8">
       <h1 className="text-3xl font-medium">
-        Configure stage: Single Elimination
+        Configure stage
+        {stage ? (
+          <span> &quot;{stage.name}&quot;</span>
+        ) : (
+          <span>: Gauntlet</span>
+        )}
       </h1>
-      <div className="-mx-4 mt-8 ring-1 ring-gray-300 sm:mx-0 rounded bg-white">
+      {updateSuccess && (
+        <div className="rounded-md bg-green-50 ring-1 ring-green-300 p-4 mt-4 -mb-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <CheckCircleIcon
+                className="h-5 w-5 text-green-400"
+                aria-hidden="true"
+              />
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium text-green-800">
+                Successfully updated
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="-mx-4 mt-8 shadow sm:mx-0 rounded bg-white">
         <div className="py-3.5 px-6 text-left text-2xl">
           <form onSubmit={submitData} method="PATCH">
             <Tabs defaultValue="general" className="w-full mt-2">
               <TabsList className="max-w-full sm:w-auto justify-start overflow-x-auto">
                 <TabsTrigger value="general">General</TabsTrigger>
-                <TabsTrigger value="advanced">Advanced</TabsTrigger>
                 <TabsTrigger value="placement">Placement</TabsTrigger>
                 <TabsTrigger value="match-settings">Match Settings</TabsTrigger>
               </TabsList>
@@ -242,13 +356,27 @@ export function SingleEliminationConfig({ stagesCount, tournamentId }: Props) {
                           type="number"
                           name="number"
                           id="number"
-                          min={stagesCount + 1}
+                          min={1}
                           max={30}
                           required
                           value={number || ""}
                           onChange={(e) => setNumber(e.target.valueAsNumber)}
-                          className="block w-full rounded border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-neutral-600 sm:text-sm sm:leading-6"
+                          // className="block w-full rounded border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-neutral-600 sm:text-sm sm:leading-6"
+                          className={classNames(
+                            numberError
+                              ? "focus:ring-2 focus:ring-red-500 ring-red-300"
+                              : "focus:ring-1 focus:ring-neutral-600 ring-gray-300",
+                            "block w-full rounded border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-inset sm:text-sm sm:leading-6"
+                          )}
                         />
+                        {numberError && (
+                          <p
+                            className="mt-2 text-sm text-red-600"
+                            id="number-error"
+                          >
+                            {numberError}
+                          </p>
+                        )}
                       </div>
                       <div className="">
                         <label
@@ -304,116 +432,6 @@ export function SingleEliminationConfig({ stagesCount, tournamentId }: Props) {
                           setSettings({
                             ...settings,
                             size: e.target.valueAsNumber,
-                          })
-                        }
-                        className="block w-full rounded border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-neutral-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-
-                    <div className="pb-2">
-                      <label className="text-sm text-gray-900">
-                        3rd/4th decider match?
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger disabled>
-                              <BsFillQuestionCircleFill className="ml-2 h-[14px] w-[14px] text-[#555] cursor-pointer" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="w-80">
-                                If enabled, a 3rd place decider match is added
-                                to the bracket, to rank the semifinals losers.
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </label>
-                      <fieldset>
-                        <legend className="sr-only">
-                          3rd/4th decider match?
-                        </legend>
-                        <div className="mt-2 sm:flex sm:items-center sm:space-x-5 sm:space-y-0">
-                          <div className="flex items-center">
-                            <input
-                              id="yes"
-                              name="decider-match"
-                              type="radio"
-                              checked={settings.third_decider === true}
-                              onChange={() =>
-                                setSettings({
-                                  ...settings,
-                                  third_decider: true,
-                                })
-                              }
-                              className="h-4 w-4 border-gray-300 text-gray-900 focus:ring-0"
-                            />
-                            <label
-                              htmlFor="yes"
-                              className="ml-3 block text-sm leading-6 text-gray-900"
-                            >
-                              Yes
-                            </label>
-                          </div>
-                          <div className="flex items-center">
-                            <input
-                              id="no"
-                              name="decider-match"
-                              type="radio"
-                              checked={settings.third_decider === false}
-                              onChange={() =>
-                                setSettings({
-                                  ...settings,
-                                  third_decider: false,
-                                })
-                              }
-                              className="h-4 w-4 border-gray-300 text-gray-900 focus:ring-0"
-                            />
-                            <label
-                              htmlFor="no"
-                              className="ml-3 block text-sm leading-6 text-gray-900"
-                            >
-                              No
-                            </label>
-                          </div>
-                        </div>
-                      </fieldset>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-              <TabsContent value="advanced">
-                <div className="grid grid-cols-1 xl:grid-cols-2 mt-6">
-                  <div className="gap-x-6 space-y-4">
-                    <div className="">
-                      <label
-                        htmlFor="threshold"
-                        className="block text-sm leading-6 text-gray-900"
-                      >
-                        Threshold
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger disabled>
-                              <BsFillQuestionCircleFill className="ml-2 h-[14px] w-[14px] text-[#555] cursor-pointer" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="w-80">
-                                Number of participants that will get qualified
-                                at the end of this stage. Will remove the
-                                unnecessary matches.
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </label>
-                      <input
-                        type="number"
-                        name="threshold"
-                        id="threshold"
-                        min={0}
-                        value={settings.threshold || ""}
-                        onChange={(e) =>
-                          setSettings({
-                            ...settings,
-                            threshold: e.target.valueAsNumber,
                           })
                         }
                         className="block w-full rounded border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-neutral-600 sm:text-sm sm:leading-6"
@@ -490,7 +508,7 @@ export function SingleEliminationConfig({ stagesCount, tournamentId }: Props) {
                 <div className="grid grid-cols-1 xl:grid-cols-2 mt-6">
                   <div className="col-span-1">
                     <label
-                      htmlFor="location"
+                      htmlFor="format"
                       className="block text-sm leading-6 text-gray-900"
                     >
                       Format
@@ -511,10 +529,10 @@ export function SingleEliminationConfig({ stagesCount, tournamentId }: Props) {
                       </TooltipProvider>
                     </label>
                     <select
-                      id="location"
-                      name="location"
+                      id="format"
+                      name="format"
                       className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-[#111] sm:text-sm sm:leading-6"
-                      value={matchSettings.format.type}
+                      value={matchSettings.format.type || ""}
                       onChange={handleTypeChange}
                     >
                       <option value="" disabled>
@@ -735,14 +753,40 @@ export function SingleEliminationConfig({ stagesCount, tournamentId }: Props) {
               </TabsContent>
             </Tabs>
 
-            <div className="mt-6 flex items-center justify-end gap-x-6">
-              <button
-                type="submit"
-                className="flex items-center rounded bg-[#111] px-5 py-2 text-sm text-white shadow-sm hover:bg-[#333] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-              >
-                <TbPlus className="h-5 w-5 mr-2" />
-                Create
-              </button>
+            <div className="mt-6 flex items-center justify-end gap-x-2">
+              {stage ? (
+                <>
+                  <button
+                    type="button"
+                    className="rounded bg-white px-3 py-2 text-sm text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    className="flex items-center rounded bg-[#111] px-3 py-2 text-sm text-white shadow-sm hover:bg-[#333] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                    onClick={updateStageAndBack}
+                  >
+                    <TbPencil className="h-5 w-5 mr-2" />
+                    Update + Back
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex items-center rounded bg-[#111] px-3 py-2 text-sm text-white shadow-sm hover:bg-[#333] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  >
+                    <TbPencil className="h-5 w-5 mr-2" />
+                    Update
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="submit"
+                  className="flex items-center rounded bg-[#111] px-3 py-2 text-sm text-white shadow-sm hover:bg-[#333] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                >
+                  <TbPlus className="h-5 w-5 mr-2" />
+                  Create
+                </button>
+              )}
             </div>
           </form>
         </div>

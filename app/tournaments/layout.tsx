@@ -66,7 +66,6 @@ export default function TournamentsLayout({
   const params = useParams();
 
   const { data: session, status } = useSession();
-  // console.log(session);
 
   return (
     <>

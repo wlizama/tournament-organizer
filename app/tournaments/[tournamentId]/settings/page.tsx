@@ -1,4 +1,3 @@
-import { verifyCurrentUserHasAccessToTournament } from "@/app/api/(Tournament)/tournaments/[id]/route";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { useState } from "react";
