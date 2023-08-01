@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Stage } from "@prisma/client";
 import { stageTypes } from "../../page";
+import React from "react";
 
 async function getStage(stageId: string) {
   const stage = await prisma.stage.findFirst({
@@ -26,6 +27,7 @@ export default async function StageResult({ params }: Params) {
     (matches, round) => [...matches, ...round],
     []
   );
+  const links = createLinks(bracket);
 
   return (
     <div
@@ -38,7 +40,7 @@ export default async function StageResult({ params }: Params) {
       <div className="flex-1 p-5 overflow-hidden break-words" id="card-content">
         {/* CARD */}
         <div className="block overflow-x-auto break-words">
-          <div className="flex flex-wrap box-border w-max">
+          <div className="flex flex-wrap box-border min-w-max">
             {bracket.map((round, i) => (
               <div key={`round-${i}`} className="box-border min-w-0 mr-8">
                 <div className="min-w-[12rem] p-3 bg-neutral-100 rounded">
@@ -69,7 +71,13 @@ export default async function StageResult({ params }: Params) {
               </div>
             ))}
           </div> */}
-          <div className="w-max h-[40rem]">
+          <div
+            className="relative block"
+            style={{
+              width: bracket.length * 14 + "rem",
+              height: bracket[0].length * 5 + "rem",
+            }}
+          >
             <div className="absolute z-[1] block" id="bracket-nodes">
               {allMatches.map((match, i) => (
                 <div
@@ -107,6 +115,24 @@ export default async function StageResult({ params }: Params) {
                 </div>
               ))}
             </div>
+            <svg
+              className="absolute z-0 overflow-hidden w-full h-full"
+              x={0}
+              y={0}
+              viewBox={`0 0 ${bracket.length * 14000} ${
+                bracket[0].length * 5000
+              }`}
+              id="bracket-links"
+            >
+              {links.map((points, i) => (
+                <polyline
+                  key={`link-${i}`}
+                  className="fill-none stroke-[62.5] stroke-neutral-300"
+                  points={points}
+                  fill="none"
+                />
+              ))}
+            </svg>
           </div>
         </div>
       </div>
@@ -120,8 +146,8 @@ function createBracket(stage: Stage | null) {
   const rounds = Math.log2(size);
   const bracket = [];
 
-  let top = 0;
   let offsets = [1.375, 3.6875, 8.3125, 17.5625, 36.0625];
+  let offset = 1.375;
   // let offset = 1.85;
   for (let i = 0; i < rounds; i++) {
     const round = [];
@@ -136,17 +162,53 @@ function createBracket(stage: Stage | null) {
       } else {
         name = `M.${i + 1}.${j + 1}`;
       }
+      const nextMatchIndex = Math.floor(j / 2);
       round.push({
         match: [],
         winner: null,
         name,
+        nextMatchIndex,
         left: `${14 * i}rem`,
-        // top: `${top}rem`,
-        top: `${j * multiplier * 4.625 + offsets[i]}rem`,
+        // top: `${j * multiplier * 4.625 + offsets[i]}rem`,
+        top: `${j * multiplier * 4.625 + offset}rem`,
       });
     }
     bracket.push(round);
+
+    // Update offset for next round
+    offset += (4.625 * multiplier) / 2;
   }
 
   return bracket;
+}
+
+function createLinks(bracket: any) {
+  const links = [];
+  const matchWidth = 14;
+
+  for (let i = 0; i < bracket.length - 1; i++) {
+    const round = bracket[i];
+    const nextRound = bracket[i + 1];
+
+    for (let j = 0; j < round.length; j++) {
+      const match = round[j];
+      const nextMatch = nextRound[match.nextMatchIndex];
+
+      // Skip if there's no next match
+      if (!nextMatch) continue;
+
+      // Convert rem to unitless numbers for SVG
+      const x1 = i * matchWidth * 1000 + 12000;
+      const x2 = (i + 1) * matchWidth * 1000 - 1000;
+      const y1 = (parseFloat(match.top) + 1.9375) * 1000;
+      const y2 = (parseFloat(nextMatch.top) + 1.9375) * 1000;
+      const x3 = (i + 1) * matchWidth * 1000;
+
+      // Create link
+      const link = `${x1},${y1} ${x2},${y1} ${x2},${y2} ${x3},${y2}`;
+      links.push(link);
+    }
+  }
+
+  return links;
 }
