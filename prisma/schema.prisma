@@ -2,8 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["jsonProtocol"]
+  provider = "prisma-client-js"
+  // previewFeatures = ["jsonProtocol"]
 }
 
 datasource db {
@@ -124,6 +124,7 @@ model Tournament {
   Bracket      Bracket[]
   Ranking      Ranking[]
   Registration Registration[]
+  Match        Match[]
 }
 
 model Discipline {
@@ -162,7 +163,7 @@ model Participant {
   custom_user_identifier String?        @db.VarChar(100)
   checked_in             Boolean        @default(false)
   created_at             DateTime       @default(now())
-  type                   String
+  type                   String         @default("team")
   tournament             Tournament     @relation(fields: [tournamentId], references: [id])
   tournamentId           String
   lineup                 Json[]
@@ -186,6 +187,7 @@ model Stage {
   Round                  Round[]
   Bracket                Bracket[]
   Ranking                Ranking[]
+  Match                  Match[]
 }
 
 model Group {
@@ -202,6 +204,7 @@ model Group {
   Round          Round[]
   Bracket        Bracket[]
   Ranking        Ranking[]
+  Match          Match[]
 }
 
 model Round {
@@ -218,6 +221,7 @@ model Round {
   settings       Json
   match_settings Json
   Bracket        Bracket[]
+  Match          Match[]
 }
 
 model Bracket {
@@ -254,4 +258,30 @@ model Ranking {
   tournamentId String
   stage        Stage      @relation(fields: [stageId], references: [id])
   stageId      String
+}
+
+// MATCH 
+
+model Match {
+  id                 String     @id @default(uuid())
+  stage              Stage      @relation(fields: [stageId], references: [id])
+  stageId            String
+  group              Group      @relation(fields: [groupId], references: [id])
+  groupId            String
+  round              Round      @relation(fields: [roundId], references: [id])
+  roundId            String
+  number             Int
+  type               String
+  status             String
+  settings           Json
+  scheduled_datetime DateTime?
+  played_at          String?
+  public_note        String?
+  private_note       String?
+  report_closed      Boolean    @default(false)
+  report_status      String?
+  // possible values ^ (report, dispute)
+  opponents          Json[]
+  tournament         Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId       String
 }

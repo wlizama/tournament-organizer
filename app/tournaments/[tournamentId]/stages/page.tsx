@@ -18,7 +18,7 @@ async function getStages(tournamentId: string) {
   });
 }
 
-const stageTypes: Record<string, Record<string, string>> = {
+export const stageTypes: Record<string, Record<string, string>> = {
   single_elimination: {
     name: "Single Elimination",
     imgUrl:

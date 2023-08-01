@@ -5,8 +5,6 @@ import { Fragment, useState } from "react";
 import { Dialog, Disclosure, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
-  CalendarIcon,
-  ChartPieIcon,
   ChevronRightIcon,
   DocumentDuplicateIcon,
   FolderIcon,
@@ -18,7 +16,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 
 const navigation = [
-  { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
+  { name: "Tournaments", href: "/tournaments", icon: HomeIcon, current: true },
   {
     name: "Teams",
     icon: UsersIcon,
@@ -40,14 +38,7 @@ const navigation = [
       { name: "New Customer Portal", href: "#", current: false },
     ],
   },
-  { name: "Calendar", href: "#", icon: CalendarIcon, current: false },
   { name: "Documents", href: "#", icon: DocumentDuplicateIcon, current: false },
-  { name: "Reports", href: "#", icon: ChartPieIcon, current: false },
-];
-const teams = [
-  { id: 1, name: "Heroicons", href: "#", initial: "H", current: false },
-  { id: 2, name: "Tailwind Labs", href: "#", initial: "T", current: false },
-  { id: 3, name: "Workcation", href: "#", initial: "W", current: false },
 ];
 
 function classNames(...classes: string[]) {
@@ -62,10 +53,22 @@ export default function TournamentsLayout({
   children,
 }: TournamentsLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<number | null>(null);
 
   const params = useParams();
 
   const { data: session, status } = useSession();
+
+  const handleClick = (index: number) => {
+    setActiveMenu(activeMenu === index ? null : index);
+  };
+
+  // useEffect(() => {
+  //   const activeIndex = data.findIndex(item =>
+  //     item.subItems.some(subItem => `/${subItem.route}` === router.pathname)
+  //   );
+  //   setActiveMenu(activeIndex);
+  // }, []);
 
   return (
     <>
@@ -156,31 +159,6 @@ export default function TournamentsLayout({
                             ))}
                           </ul>
                         </li>
-                        <li>
-                          <div className="text-xs font-semibold leading-6 text-gray-400">
-                            Your teams
-                          </div>
-                          <ul role="list" className="-mx-2 mt-2 space-y-1">
-                            {teams.map((team) => (
-                              <li key={team.name}>
-                                <a
-                                  href={team.href}
-                                  className={classNames(
-                                    team.current
-                                      ? "bg-gray-800 text-white"
-                                      : "text-gray-400 hover:text-white hover:bg-gray-800",
-                                    "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                                  )}
-                                >
-                                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-white">
-                                    {team.initial}
-                                  </span>
-                                  <span className="truncate">{team.name}</span>
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
-                        </li>
                       </ul>
                     </nav>
                   </div>
@@ -247,7 +225,7 @@ export default function TournamentsLayout({
                                           subItem.current
                                             ? "bg-[#333] text-white"
                                             : "text-[#777] hover:text-white hover:bg-[#222]",
-                                          "block rounded-md py-2 pr-2 pl-9 text-sm leading-6"
+                                          "block rounded-md py-2 pr-2 pl-4 text-sm leading-6"
                                         )}
                                       >
                                         {subItem.name}

@@ -42,7 +42,7 @@ export function UserAuthForm() {
           Continue with Discord
         </button>
       </span>
-      <span className="block w-[1px] h-[1px] min-w-[1px] min-h-[1px] ml-6 mt-[11px]"></span>
+      {/* <span className="block w-[1px] h-[1px] min-w-[1px] min-h-[1px] ml-6 mt-[11px]"></span>
       <span className="block relative box-border">
         <button
           type="button"
@@ -71,7 +71,7 @@ export function UserAuthForm() {
           )}
           Continue with Google
         </button>
-      </span>
+      </span> */}
       <span className="mt-[11px] block w-[1px] h-[1px] min-w-[1px] min-h-[1px] ml-6"></span>
     </div>
   );

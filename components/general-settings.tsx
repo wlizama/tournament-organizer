@@ -1,5 +1,8 @@
 "use client";
 
+// FIX FORM VALIDATION FOR START AND END DATES
+// END DATE CANNOT BE SET BEFORE START DATE
+
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import countryList from "react-select-country-list";
