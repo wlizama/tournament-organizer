@@ -82,6 +82,8 @@ export default function GeneralSettings({ tournament }: GeneralSettingsProps) {
   const [discord, setDiscord] = useState(tournament!.discord);
   const [activeTab, setActiveTab] = useState("general");
 
+  const [dateError, setDateError] = useState("");
+
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
   const router = useRouter();
 
@@ -96,6 +98,17 @@ export default function GeneralSettings({ tournament }: GeneralSettingsProps) {
 
   const submitData = async (e: React.SyntheticEvent) => {
     e.preventDefault();
+
+    if (scheduledDateEnd && scheduledDateStart) {
+      const start = new Date(scheduledDateStart);
+      const end = new Date(scheduledDateEnd);
+
+      if (end < start) {
+        setDateError("End date cannot be before start date");
+        return;
+      }
+    }
+
     try {
       const body = {
         id,
@@ -499,6 +512,9 @@ export default function GeneralSettings({ tournament }: GeneralSettingsProps) {
                           className="block w-full rounded border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-neutral-600 sm:text-sm sm:leading-6"
                         />
                       </div>
+                      {dateError && (
+                        <p className="text-red-500 text-xs">{dateError}</p>
+                      )}
                       <div className="">
                         <label
                           htmlFor="timezone"
