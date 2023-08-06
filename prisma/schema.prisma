@@ -51,6 +51,7 @@ model User {
   accounts     Account[]
   sessions     Session[]
   Registration Registration[]
+  MatchReport  MatchReport[]
 }
 
 model VerificationToken {
@@ -125,6 +126,7 @@ model Tournament {
   Ranking      Ranking[]
   Registration Registration[]
   Match        Match[]
+  MatchReport  MatchReport[]
 }
 
 model Discipline {
@@ -168,6 +170,7 @@ model Participant {
   tournamentId           String
   lineup                 Json[]
   Registration           Registration[]
+  MatchReport            MatchReport[]
 }
 
 // STRUCTURE 
@@ -263,12 +266,12 @@ model Ranking {
 // MATCH 
 
 model Match {
-  id                 String     @id @default(uuid())
-  stage              Stage      @relation(fields: [stageId], references: [id])
+  id                 String        @id @default(uuid())
+  stage              Stage         @relation(fields: [stageId], references: [id])
   stageId            String
-  group              Group      @relation(fields: [groupId], references: [id])
+  group              Group         @relation(fields: [groupId], references: [id])
   groupId            String
-  round              Round      @relation(fields: [roundId], references: [id])
+  round              Round         @relation(fields: [roundId], references: [id])
   roundId            String
   number             Int
   type               String
@@ -278,10 +281,34 @@ model Match {
   played_at          String?
   public_note        String?
   private_note       String?
-  report_closed      Boolean    @default(false)
-  report_status      String?
-  // possible values ^ (report, dispute)
+  report_closed      Boolean       @default(false)
+  report_status      String?       @default("report")
   opponents          Json[]
-  tournament         Tournament @relation(fields: [tournamentId], references: [id])
+  tournament         Tournament    @relation(fields: [tournamentId], references: [id])
   tournamentId       String
+  MatchReport        MatchReport[]
+}
+
+model MatchGame {
+  id         String @id @default(uuid())
+  status     String @default("pending")
+  opponents  Json[]
+  properties Json
+}
+
+model MatchReport {
+  id            String      @id @default(uuid())
+  participant   Participant @relation(fields: [participantId], references: [id])
+  participantId String
+  type          String      @default("report")
+  report        Json
+  closed        Boolean     @default(false)
+  closed_at     DateTime?
+  note          String?
+  userId        String?
+  tournament    Tournament  @relation(fields: [tournamentId], references: [id])
+  tournamentId  String
+  match         Match       @relation(fields: [matchId], references: [id])
+  matchId       String
+  User          User?       @relation(fields: [userId], references: [id])
 }

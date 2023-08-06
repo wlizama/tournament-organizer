@@ -53,7 +53,8 @@ export default async function StageResult({ params }: Params) {
     "Team 15",
     "Team 16",
   ];
-  const bracket = createBracket(stage, teams);
+  // const bracket = createBracket(stage, teams);
+  const bracket = createBracket(stage);
   const allMatches = bracket.reduce(
     (matches, round) => [...matches, ...round],
     []
@@ -62,7 +63,7 @@ export default async function StageResult({ params }: Params) {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-medium">{stage!.name}</h1>
+      <h1 className="text-3xl font-semibold">{stage!.name}</h1>
       <div
         className="relative flex flex-col bg-white text-left overflow-hidden rounded m-0 mt-8"
         id="card"
@@ -171,7 +172,8 @@ export default async function StageResult({ params }: Params) {
   );
 }
 
-export function createBracket(stage: Stage | null, teams: any) {
+// export function createBracket(stage: Stage | null, teams: any) {
+export function createBracket(stage: Stage | null) {
   // @ts-ignore
   const size = stage.settings.size;
   const rounds = Math.log2(size);
@@ -194,10 +196,10 @@ export function createBracket(stage: Stage | null, teams: any) {
       const nextMatchIndex = Math.floor(j / 2);
 
       let match: string[] = [];
-      if (i === 0) {
-        // match = [teams[j].name, teams[teams.length - 1 - j].name];
-        match = [teams[j], teams[teams.length - 1 - j]];
-      }
+      // if (i === 0) {
+      //   // match = [teams[j].name, teams[teams.length - 1 - j].name];
+      //   match = [teams[j], teams[teams.length - 1 - j]];
+      // }
 
       round.push({
         match,

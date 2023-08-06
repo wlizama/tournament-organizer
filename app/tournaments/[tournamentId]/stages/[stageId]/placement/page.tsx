@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { createBracket, createLinks } from "../result/page";
-import { useState } from "react";
+import SeedForm from "@/components/seeding/seed-form";
 
 async function getStage(stageId: string) {
   return await prisma.stage.findFirst({
@@ -10,23 +10,37 @@ async function getStage(stageId: string) {
   });
 }
 
+async function getParticipants(tournamentId: string) {
+  return await prisma.participant.findMany({
+    where: {
+      tournamentId: tournamentId,
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+}
+
 interface Params {
   params: {
-    // tournamentId: string;
+    tournamentId: string;
     stageId: string;
   };
 }
 
-export default async function Placement({ params }: Params) {
-  const stage = await getStage(params.stageId);
+export default async function StagePlacement({ params }: Params) {
+  const stageData = getStage(params.stageId);
+  const particpantsData = getParticipants(params.tournamentId);
+  const [stage, participants] = await Promise.all([stageData, particpantsData]);
+  const stageSize: number = (stage?.settings as any)?.size;
+
   const bracket = createBracket(stage);
   const allMatches = bracket.reduce(
     (matches, round) => [...matches, ...round],
     []
   );
   const links = createLinks(bracket);
-
-  const [teams, setTeams] = useState(Array(16).fill(""));
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -41,10 +55,11 @@ export default async function Placement({ params }: Params) {
               <h2 className="text-2xl font-medium">Seeding</h2>
             </div>
             <div
-              className="flex-1 p-5 overflow-hidden break-words"
+              className="flex-1 p-5 overflow-auto break-words"
               id="card-content"
             >
               {/* CARD */}
+              <SeedForm numSeeds={stageSize} participants={participants} />
             </div>
           </div>
         </div>

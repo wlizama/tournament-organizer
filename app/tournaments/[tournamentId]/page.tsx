@@ -29,6 +29,14 @@ export default function Tournament({ params }: Params) {
         </div>
         <div className="">
           <Link
+            href={`/tournaments/${params.tournamentId}/placement`}
+            className="underline"
+          >
+            Placement
+          </Link>
+        </div>
+        <div className="">
+          <Link
             href={`/tournaments/${params.tournamentId}/matches`}
             className="underline"
           >
