@@ -18,6 +18,7 @@ async function getParticipants(tournamentId: string) {
     select: {
       id: true,
       name: true,
+      created_at: true,
     },
   });
 }
@@ -43,12 +44,12 @@ export default async function StagePlacement({ params }: Params) {
   const links = createLinks(bracket);
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
+    <div className="">
       <h1 className="text-3xl font-medium">Placement</h1>
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-5 gap-8">
-        <div className="md:col-span-2">
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 lg:gap-8">
+        <div className="md:col-span-1 xl:col-span-2">
           <div
-            className="relative flex flex-col bg-white text-left overflow-hidden rounded m-0"
+            className="relative flex flex-col bg-white text-left overflow-hidden rounded m-0 shadow"
             id="card"
           >
             <div className="p-5 border-b" id="card-header">
@@ -63,9 +64,9 @@ export default async function StagePlacement({ params }: Params) {
             </div>
           </div>
         </div>
-        <div className="md:col-span-3">
+        <div className="md:col-span-1 xl:col-span-3">
           <div
-            className="relative flex flex-col bg-white text-left overflow-hidden rounded m-0"
+            className="relative flex flex-col bg-white text-left overflow-hidden rounded m-0 shadow"
             id="card"
           >
             <div className="p-5 border-b" id="card-header">

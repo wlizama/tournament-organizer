@@ -2,20 +2,22 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { TbPencil, TbPlus, TbX } from "react-icons/tb";
+import TeamSelectModal from "./team-select-modal";
 
 interface Props {
   numSeeds: number;
   participants: Participant[];
-  // onSubmit: (seededParticipants: Participant[]) => void;
 }
 
 interface Participant {
   id: string;
   name: string;
+  created_at: Date;
 }
 
 export default function SeedForm({ numSeeds, participants }: Props) {
-  const { handleSubmit, register } = useForm();
+  const { handleSubmit } = useForm();
   const onSubmit = (data: any) => console.log(data);
 
   const [seededParticipants, setSeededParticipants] = useState<
@@ -24,6 +26,8 @@ export default function SeedForm({ numSeeds, participants }: Props) {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [currentSeedIndex, setCurrentSeedIndex] = useState<number | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<Participant | null>(null);
+
+  console.log(seededParticipants);
 
   const handleOpenModal = (index: number) => {
     setCurrentSeedIndex(index);
@@ -90,18 +94,22 @@ export default function SeedForm({ numSeeds, participants }: Props) {
                   <div className="block box-content ml-1">
                     <button
                       type="button"
-                      className="py-0 text-center w-8"
+                      className="py-0 text-center w-8 align-middle"
                       onClick={() => handleOpenModal(index)}
                     >
-                      Edit
+                      <TbPencil className="h-5 w-5 ml-2 text-blue-500 stroke-2" />
                     </button>
                   </div>
                   <div className="flex-[10_1_0%] text-left w-0 ml-1 overflow-ellipsis whitespace-nowrap box-content">
                     {seededParticipant.name}
                   </div>
                   <div className="box-content ml-1">
-                    <button type="button" onClick={() => handleRemove(index)}>
-                      Remove
+                    <button
+                      type="button"
+                      className="py-0 text-center align-middle"
+                      onClick={() => handleRemove(index)}
+                    >
+                      <TbX className="h-5 w-5 ml-2 stroke-2" />
                     </button>
                   </div>
                 </>
@@ -109,10 +117,10 @@ export default function SeedForm({ numSeeds, participants }: Props) {
                 <div className="block box-content ml-1">
                   <button
                     type="button"
-                    className="py-0 text-center w-8"
+                    className="py-0 text-center w-8 align-middle"
                     onClick={() => handleOpenModal(index)}
                   >
-                    Add
+                    <TbPlus className="h-5 w-5 ml-2 text-green-500 stroke-2" />
                   </button>
                 </div>
               )}
@@ -120,26 +128,16 @@ export default function SeedForm({ numSeeds, participants }: Props) {
           ))}
           <button type="submit">Seed Teams</button>
           {modalVisible && (
-            <div>
-              <h2>Select a team</h2>
-              {participants.length === 0 ? (
-                <p>No participants found</p>
-              ) : (
-                participants.map((p) => (
-                  <label key={p.id}>
-                    <input
-                      type="radio"
-                      value={p.id}
-                      checked={selectedTeam?.id === p.id}
-                      onChange={() => handleSelectTeam(p)}
-                    />
-                    {p.name}
-                  </label>
-                ))
-              )}
-              <button onClick={handleAdd}>Add</button>
-              <button onClick={handleCloseModal}>Cancel</button>
-            </div>
+            <TeamSelectModal
+              participants={participants}
+              handleAdd={handleAdd}
+              handleCloseModal={handleCloseModal}
+              selectedTeam={selectedTeam}
+              handleSelectTeam={handleSelectTeam}
+              open={modalVisible}
+              setOpen={setModalVisible}
+              seededParticipants={seededParticipants}
+            />
           )}
         </form>
       </div>

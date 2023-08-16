@@ -66,7 +66,7 @@ model VerificationToken {
 
 model Tournament {
   id                   String     @id @default(uuid())
-  discipline           Discipline @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
+  discipline           Discipline @relation(fields: [disciplineId], references: [id])
   disciplineId         String
   name                 String     @db.VarChar(30)
   full_name            String?    @db.VarChar(80)
@@ -116,7 +116,7 @@ model Tournament {
   team_max_size                       Int
 
   created_at   DateTime       @default(now())
-  user         User           @relation(fields: [userId], references: [id])
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String
   participants Participant[]
   Stage        Stage[]
@@ -141,11 +141,11 @@ model Discipline {
 
 model Registration {
   id                     String      @id @default(uuid())
-  tournament             Tournament  @relation(fields: [tournamentId], references: [id])
+  tournament             Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId           String
-  participant            Participant @relation(fields: [participantId], references: [id])
+  participant            Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
   participantId          String
-  user                   User        @relation(fields: [userId], references: [id])
+  user                   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                 String
   custom_user_identifier String?     @db.VarChar(100)
   email                  String?     @db.VarChar(180)
@@ -166,7 +166,7 @@ model Participant {
   checked_in             Boolean        @default(false)
   created_at             DateTime       @default(now())
   type                   String         @default("team")
-  tournament             Tournament     @relation(fields: [tournamentId], references: [id])
+  tournament             Tournament     @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId           String
   lineup                 Json[]
   Registration           Registration[]
@@ -177,7 +177,7 @@ model Participant {
 
 model Stage {
   id                     String     @id @default(uuid())
-  tournament             Tournament @relation(fields: [tournamentId], references: [id])
+  tournament             Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId           String
   number                 Int
   name                   String     @db.VarChar(30)
@@ -195,14 +195,14 @@ model Stage {
 
 model Group {
   id             String     @id @default(uuid())
-  stage          Stage      @relation(fields: [stageId], references: [id])
+  stage          Stage      @relation(fields: [stageId], references: [id], onDelete: Cascade)
   stageId        String
   number         Int
   name           String     @db.VarChar(30)
   closed         Boolean    @default(false)
   settings       Json
   match_settings Json
-  tournament     Tournament @relation(fields: [tournamentId], references: [id])
+  tournament     Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId   String
   Round          Round[]
   Bracket        Bracket[]
@@ -212,11 +212,11 @@ model Group {
 
 model Round {
   id             String     @id @default(uuid())
-  stage          Stage      @relation(fields: [stageId], references: [id])
+  stage          Stage      @relation(fields: [stageId], references: [id], onDelete: Cascade)
   stageId        String
-  group          Group      @relation(fields: [groupId], references: [id])
+  group          Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId        String
-  tournament     Tournament @relation(fields: [tournamentId], references: [id])
+  tournament     Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId   String
   number         Int
   name           String     @db.VarChar(30)
@@ -229,13 +229,13 @@ model Round {
 
 model Bracket {
   id                 String     @id @default(uuid())
-  tournament         Tournament @relation(fields: [tournamentId], references: [id])
+  tournament         Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId       String
-  stage              Stage      @relation(fields: [stageId], references: [id])
+  stage              Stage      @relation(fields: [stageId], references: [id], onDelete: Cascade)
   stageId            String
-  group              Group      @relation(fields: [groupId], references: [id])
+  group              Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId            String
-  round              Round      @relation(fields: [roundId], references: [id])
+  round              Round      @relation(fields: [roundId], references: [id], onDelete: Cascade)
   roundId            String
   number             Int
   type               String
@@ -249,7 +249,7 @@ model Bracket {
 
 model Ranking {
   id           String     @id @default(uuid())
-  group        Group      @relation(fields: [groupId], references: [id])
+  group        Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId      String
   number       Int
   position     Int
@@ -257,9 +257,9 @@ model Ranking {
   participant  Json
   points       Int
   properties   Json
-  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId String
-  stage        Stage      @relation(fields: [stageId], references: [id])
+  stage        Stage      @relation(fields: [stageId], references: [id], onDelete: Cascade)
   stageId      String
 }
 
@@ -267,15 +267,15 @@ model Ranking {
 
 model Match {
   id                 String        @id @default(uuid())
-  stage              Stage         @relation(fields: [stageId], references: [id])
+  stage              Stage         @relation(fields: [stageId], references: [id], onDelete: Cascade)
   stageId            String
-  group              Group         @relation(fields: [groupId], references: [id])
+  group              Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId            String
-  round              Round         @relation(fields: [roundId], references: [id])
+  round              Round         @relation(fields: [roundId], references: [id], onDelete: Cascade)
   roundId            String
   number             Int
   type               String
-  status             String
+  status             String        @default("pending")
   settings           Json
   scheduled_datetime DateTime?
   played_at          String?
@@ -284,7 +284,7 @@ model Match {
   report_closed      Boolean       @default(false)
   report_status      String?       @default("report")
   opponents          Json[]
-  tournament         Tournament    @relation(fields: [tournamentId], references: [id])
+  tournament         Tournament    @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId       String
   MatchReport        MatchReport[]
 }
@@ -298,7 +298,7 @@ model MatchGame {
 
 model MatchReport {
   id            String      @id @default(uuid())
-  participant   Participant @relation(fields: [participantId], references: [id])
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
   participantId String
   type          String      @default("report")
   report        Json
@@ -306,9 +306,9 @@ model MatchReport {
   closed_at     DateTime?
   note          String?
   userId        String?
-  tournament    Tournament  @relation(fields: [tournamentId], references: [id])
+  tournament    Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId  String
-  match         Match       @relation(fields: [matchId], references: [id])
+  match         Match       @relation(fields: [matchId], references: [id], onDelete: Cascade)
   matchId       String
-  User          User?       @relation(fields: [userId], references: [id])
+  User          User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

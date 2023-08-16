@@ -251,6 +251,49 @@ export function SingleEliminationConfig({
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body),
           });
+          // if (res.ok) {
+          //   const stageData = await res.json();
+          //   console.log(stageData);
+
+          //   // create groups for the stage
+          //   const groupsRes = await fetch(`/api/groups`, {
+          //     method: "POST",
+          //     headers: { "Content-Type": "application/json" },
+          //     body: JSON.stringify({
+          //       stageId: stageData.id,
+          //       tournamentId: tournamentId,
+          //     }),
+          //   });
+
+          //   if (groupsRes.ok) {
+          //     // create rounds and matches for the stage
+          //     const roundsRes = await fetch(`/api/rounds`, {
+          //       method: "POST",
+          //       headers: { "Content-Type": "application/json" },
+          //       body: JSON.stringify({
+          //         stageId: stageData.id,
+          //         tournamentId: tournamentId,
+          //       }),
+          //     });
+
+          //     if (roundsRes.ok) {
+          //       const matchesRes = await fetch(`/api/matches`, {
+          //         method: "POST",
+          //         headers: { "Content-Type": "application/json" },
+          //         body: JSON.stringify({
+          //           stageId: stageData.id,
+          //           tournamentId: tournamentId,
+          //         }),
+          //       });
+
+          //       if (matchesRes.ok) {
+          //         localStorage.setItem("created", "true");
+          //         window.location.href = `/tournaments/${tournamentId}/stages`;
+          //       }
+          //     }
+          //   }
+          // }
+
           if (res.ok) {
             localStorage.setItem("created", "true");
             window.location.href = `/tournaments/${tournamentId}/stages`;

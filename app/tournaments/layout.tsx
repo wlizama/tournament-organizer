@@ -169,7 +169,7 @@ export default function TournamentsLayout({
         </Transition.Root>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+        <div className="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col">
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-[#111] px-6">
             <div className="flex h-16 shrink-0 items-center">
@@ -268,7 +268,7 @@ export default function TournamentsLayout({
           </div>
         </div>
 
-        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 px-4 py-4 shadow-sm sm:px-6 xl:hidden">
           <button
             type="button"
             className="-m-2.5 p-2.5 text-gray-400 lg:hidden"
@@ -290,7 +290,7 @@ export default function TournamentsLayout({
           </a>
         </div>
 
-        <main className="py-10 lg:pl-72">
+        <main className="py-10 xl:pl-72">
           <div className="px-4 sm:px-6 lg:px-8">{children}</div>
         </main>
       </div>
