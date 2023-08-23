@@ -155,7 +155,7 @@ export default function ParticipantSettings({
     <>
       <div className="px-4 sm:px-6 md:px-8">
         <button
-          className="text-sm mb-4 hover:text-[#333]"
+          className="text-sm mb-4 mt-8 hover:text-[#333]"
           onClick={() => {
             router.back();
           }}

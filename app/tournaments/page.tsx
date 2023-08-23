@@ -9,13 +9,13 @@ export default async function Tournaments() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
-      <div className="sm:flex sm:items-center">
+      <div className="sm:flex sm:items-center my-8">
         <div className="sm:flex-auto">
           <h1 className="text-4xl font-medium leading-6 text-gray-900">
             Welcome {session?.user.name}
           </h1>
         </div>
-        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+        <div className="sm:ml-16 sm:mt-0 sm:flex-none">
           <Link
             href={"/tournaments/create"}
             type="button"

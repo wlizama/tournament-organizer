@@ -290,8 +290,8 @@ export default function TournamentsLayout({
           </a>
         </div>
 
-        <main className="py-10 xl:pl-72">
-          <div className="px-4 sm:px-6 lg:px-8">{children}</div>
+        <main className="absolute xl:pl-72 h-full top-16 xl:top-0 right-0 bottom-0 left-0">
+          <div className="px-4 sm:px-6 lg:px-8 h-full">{children}</div>
         </main>
       </div>
     </>

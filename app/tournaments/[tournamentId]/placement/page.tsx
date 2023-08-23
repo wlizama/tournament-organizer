@@ -25,10 +25,12 @@ export default async function Placement({ params }: Params) {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
-      <div className="text-3xl font-semibold">Placement</div>
+      <div className="relative my-6">
+        <h1 className="text-3xl font-semibold">Placement</h1>
+      </div>
       <ul
         role="list"
-        className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-3"
+        className="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-3"
       >
         {stages.map((stage) => (
           <Link

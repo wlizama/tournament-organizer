@@ -11,8 +11,10 @@ interface Params {
 export default async function Tournament({ params }: Params) {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
-      <div className="text-3xl font-semibold">Settings</div>
-      <div className="mt-8 font-medium space-y-2">
+      <div className="relative my-8">
+        <h1 className="text-3xl font-semibold">Settings</h1>
+      </div>
+      <div className="font-medium space-y-2">
         <div className="">
           <Link
             href={`/tournaments/${params.tournamentId}/edit`}

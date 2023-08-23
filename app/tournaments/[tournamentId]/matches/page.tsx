@@ -28,8 +28,8 @@ export default async function Matches({ params }: Params) {
   const stageData = getStage(params.tournamentId);
 
   const [matches, stages] = await Promise.all([matchData, stageData]);
-  console.log(matches);
-  console.log(stages);
+  // console.log(matches);
+  // console.log(stages);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">

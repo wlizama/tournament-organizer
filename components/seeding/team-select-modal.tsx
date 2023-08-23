@@ -140,7 +140,7 @@ export default function TeamSelectModal({
                     <div className="flex-grow-0 flex-shrink-0 flex-auto min-w-0">
                       <button
                         type="button"
-                        className="block w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-white shadow-sm"
+                        className="block w-full justify-center rounded-md bg-[#111] px-3 py-2 text-white shadow-sm"
                         onClick={handleAdd}
                       >
                         <div className="flex items-center gap-2">

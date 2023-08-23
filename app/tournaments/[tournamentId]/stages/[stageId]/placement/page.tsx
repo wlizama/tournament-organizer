@@ -23,6 +23,42 @@ async function getParticipants(tournamentId: string) {
   });
 }
 
+async function getSeeds(stageId: string) {
+  const firstRoundMatches = await prisma.match.findMany({
+    where: {
+      stageId: stageId,
+      round: {
+        number: 1,
+      },
+    },
+    orderBy: {
+      number: "asc",
+    },
+    select: {
+      opponents: true,
+    },
+  });
+
+  // const seeds = firstRoundMatches
+  //   .map((match) => match.opponents)
+  //   .flat()
+  //   .sort((a: any, b: any) => a.number - b.number)
+  //   .map((opponent: any) => opponent.participant);
+
+  const seeds = new Array(firstRoundMatches.length * 2).fill(null);
+
+  firstRoundMatches.forEach((match) => {
+    match.opponents.forEach((opponent: any) => {
+      // seeds[opponent.number - 1] = opponent;
+      if (opponent.participant) {
+        seeds[opponent.number - 1] = opponent.participant;
+      }
+    });
+  });
+
+  return seeds;
+}
+
 interface Params {
   params: {
     tournamentId: string;
@@ -33,7 +69,12 @@ interface Params {
 export default async function StagePlacement({ params }: Params) {
   const stageData = getStage(params.stageId);
   const particpantsData = getParticipants(params.tournamentId);
-  const [stage, participants] = await Promise.all([stageData, particpantsData]);
+  const seedsData = getSeeds(params.stageId);
+  const [stage, participants, seeds] = await Promise.all([
+    stageData,
+    particpantsData,
+    seedsData,
+  ]);
   const stageSize: number = (stage?.settings as any)?.size;
 
   const bracket = createBracket(stage);
@@ -44,24 +85,26 @@ export default async function StagePlacement({ params }: Params) {
   const links = createLinks(bracket);
 
   return (
-    <div className="">
-      <h1 className="text-3xl font-medium">Placement</h1>
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 lg:gap-8">
+    <div className="h-full">
+      <div className="relative my-6">
+        <h1 className="text-3xl font-medium">Placement</h1>
+      </div>
+      <div className="mt-8 h-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 lg:gap-8">
         <div className="md:col-span-1 xl:col-span-2">
           <div
-            className="relative flex flex-col bg-white text-left overflow-hidden rounded m-0 shadow"
+            className="relative flex flex-col bg-white text-start overflow-hidden rounded m-0 shadow"
             id="card"
           >
             <div className="p-5 border-b" id="card-header">
               <h2 className="text-2xl font-medium">Seeding</h2>
             </div>
-            <div
-              className="flex-1 p-5 overflow-auto break-words"
-              id="card-content"
-            >
-              {/* CARD */}
-              <SeedForm numSeeds={stageSize} participants={participants} />
-            </div>
+            {/* CARD */}
+            <SeedForm
+              numSeeds={stageSize}
+              participants={participants}
+              stageId={stage!.id}
+              seeds={seeds}
+            />
           </div>
         </div>
         <div className="md:col-span-1 xl:col-span-3">
