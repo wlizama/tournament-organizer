@@ -32,8 +32,8 @@ export async function POST(request: Request) {
       name,
       type,
       settings,
-      match_settings,
-      auto_placement_enabled,
+      matchSettings,
+      autoPlacement,
     } = await request.json();
 
     if (!session) {
@@ -51,8 +51,8 @@ export async function POST(request: Request) {
         name,
         type,
         settings,
-        match_settings,
-        auto_placement_enabled,
+        match_settings: matchSettings,
+        auto_placement_enabled: autoPlacement,
       },
     });
 
@@ -76,83 +76,42 @@ export async function POST(request: Request) {
       },
     });
 
-    // create round
-    const round = await prisma.round.create({
-      data: {
-        stage: {
-          connect: {
-            id: stage.id,
-          },
-        },
-        group: {
-          connect: {
-            id: group.id,
-          },
-        },
-        tournament: {
-          connect: {
-            id: tournamentId,
-          },
-        },
-        number: 1,
-        name: `Round 1`,
-        settings: {},
-        match_settings: {},
-      },
-    });
+    // Generate rounds and matches
+    const { rounds, matches } = await generateMatchesForStage(stage, group);
 
-    // console.log(stage);
-
-    // Generate matches
-    const matches = generateMatchesForStage(stage);
-    // console.log(matches);
-
-    // const data = matches.map((match) => ({
-    //   stageId: match.stageId,
-    //   number: match.number,
-    //   type: match.type,
-    //   status: match.status,
-    // }));
-    // console.log(data);
-
-    await prisma.match.createMany({
-      data: matches.map((match) => ({
-        stageId: stage.id,
-        groupId: group.id,
-        tournamentId: stage.tournamentId,
-        roundId: round.id,
-        settings: {},
-        opponents: [],
-        number: match.number!,
-        type: match.type!,
-        status: match.status!,
-      })),
-    });
-
-    return NextResponse.json({ stage, group, round });
+    return NextResponse.json({ stage, group, rounds, matches });
   } catch (error) {
     return new Response("Error creating stage", { status: 500 });
   }
 }
 
-function generateMatchesForStage(stage: any): Partial<Match>[] {
+async function generateMatchesForStage(stage: any, group: any) {
+  let rounds;
+  let matches;
+
   switch (stage.type) {
     case "single_elimination":
-      return generateSingleEliminationMatches(stage);
+      // return generateSingleEliminationMatches(stage, group);
+      ({ rounds, matches } = await generateSingleEliminationMatches(
+        stage,
+        group
+      ));
       break;
     // case "double_elimination":
     //   return generateDoubleEliminationMatches(stage);
     //   break;
-    default:
-      throw new Error("Invalid stage type");
+    // default:
+    //   throw new Error("Invalid stage type");
   }
+
+  return { rounds, matches };
 }
 
-function generateSingleEliminationMatches(stage: any): Partial<Match>[] {
+async function generateSingleEliminationMatches(stage: any, group: any) {
   const size = stage.settings.size;
   const thirdDecider = stage.settings.third_decider;
   const threshold = stage.settings.threshold;
-  const matches: Partial<Match>[] = [];
+  const matches = [];
 
   const totalMatches = size - 1;
   let validCompetitors = size;
@@ -161,29 +120,80 @@ function generateSingleEliminationMatches(stage: any): Partial<Match>[] {
     validCompetitors = Math.max(validCompetitors, threshold);
   }
 
-  for (let i = 0; i < totalMatches; i++) {
-    if (i >= validCompetitors - 1) {
-      // Skip matches with seeds lower or equal to the threshold
-      continue;
+  // Create rounds for single elimination
+  const roundsData = [];
+  let roundNumber = 1;
+  let matchesInRound = size / 2;
+  while (matchesInRound >= 1) {
+    if (matchesInRound * 2 <= validCompetitors) {
+      roundsData.push({
+        stageId: stage.id,
+        groupId: group.id,
+        tournamentId: stage.tournamentId,
+        number: roundNumber,
+        name: `Round ${roundNumber}`,
+        settings: {},
+        match_settings: {},
+      });
     }
-    matches.push({
-      stageId: stage.id,
-      type: "duel",
-      status: "pending",
-      number: i + 1,
-    });
+
+    matchesInRound = matchesInRound / 2;
+    roundNumber++;
   }
 
+  // If thirdDecider option is enabled, add an additional round
   if (thirdDecider && size >= 4) {
-    matches.push({
+    roundsData.push({
       stageId: stage.id,
-      type: "duel",
-      status: "pending",
-      number: totalMatches + 1,
+      groupId: group.id,
+      tournamentId: stage.tournamentId,
+      number: roundNumber,
+      name: `Round ${roundNumber}`,
+      settings: {},
+      match_settings: {},
     });
   }
 
-  return matches;
+  // Insert rounds into the database in bulk
+  await prisma.round.createMany({
+    data: roundsData,
+    skipDuplicates: true,
+  });
+
+  // Create matches for each round
+  // Note: since createMany does not return the created records, you need to query the rounds separately
+  const rounds = await prisma.round.findMany({
+    where: {
+      stageId: stage.id,
+      groupId: group.id,
+      tournamentId: stage.tournamentId,
+    },
+  });
+
+  for (let i = 0; i < rounds.length; i++) {
+    const round = rounds[i];
+    const numMatches = size / Math.pow(2, round.number);
+    for (let j = 0; j < numMatches; j++) {
+      matches.push({
+        tournamentId: stage.tournamentId,
+        stageId: stage.id,
+        groupId: group.id,
+        roundId: round.id,
+        type: "duel",
+        status: "pending",
+        number: j + 1,
+        settings: {},
+        opponents: [],
+      });
+    }
+  }
+
+  // Insert matches into the database
+  await prisma.match.createMany({
+    data: matches,
+  });
+
+  return { rounds, matches };
 }
 
 function generateDoubleEliminationMatches(stage: any): Partial<Match>[] {
