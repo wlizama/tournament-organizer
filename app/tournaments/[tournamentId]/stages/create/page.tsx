@@ -127,8 +127,10 @@ export default async function CreateStage({ params, searchParams }: Params) {
 
   if (matchType === "duel") {
     return (
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="text-3xl font-semibold">Select a Stage Type</div>
+      <div className="">
+        <div className="relative my-10">
+          <h1 className="text-3xl font-semibold">Select a Stage Type</h1>
+        </div>
         <ul
           role="list"
           className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-3"
@@ -166,8 +168,10 @@ export default async function CreateStage({ params, searchParams }: Params) {
 
   if (matchType === "ffa") {
     return (
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="text-3xl font-semibold">Select a Stage Type</div>
+      <div className="">
+        <div className="relative my-10">
+          <h1 className="text-3xl font-semibold">Select a Stage Type</h1>
+        </div>
         <ul
           role="list"
           className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-3"
@@ -266,8 +270,10 @@ export default async function CreateStage({ params, searchParams }: Params) {
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="text-3xl font-semibold">Select a Match Type</div>
+    <div className="">
+      <div className="relative my-10">
+        <h1 className="text-3xl font-semibold">Select a Match Type</h1>
+      </div>
       <ul role="list" className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-2">
         <Link
           href={`/tournaments/${params.tournamentId}/stages/create?match_type=duel`}

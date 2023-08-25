@@ -8,8 +8,8 @@ interface Params {
 
 export default function Tournament({ params }: Params) {
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="relative my-8">
+    <div className="">
+      <div className="relative my-10">
         <h1 className="text-3xl font-semibold">Overview</h1>
       </div>
       <div className="font-medium space-y-2">
@@ -42,7 +42,7 @@ export default function Tournament({ params }: Params) {
             href={`/tournaments/${params.tournamentId}/matches`}
             className="underline"
           >
-            Match Overview
+            Matches
           </Link>
         </div>
       </div>

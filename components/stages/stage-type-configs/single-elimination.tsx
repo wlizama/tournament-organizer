@@ -298,15 +298,17 @@ export function SingleEliminationConfig({
   const selectedOptions = matchOptions[matchSettings.format.type] || {};
 
   return (
-    <div className="mx-auto max-w-4xl px-4 sm:px-6 md:px-8">
-      <h1 className="text-3xl font-medium">
-        Configure stage
-        {stage ? (
-          <span> &quot;{stage.name}&quot;</span>
-        ) : (
-          <span>: Single Elimination</span>
-        )}
-      </h1>
+    <div className="mx-auto max-w-4xl">
+      <div className="relative my-10">
+        <h1 className="text-3xl font-medium">
+          Configure stage
+          {stage ? (
+            <span> &quot;{stage.name}&quot;</span>
+          ) : (
+            <span>: Single Elimination</span>
+          )}
+        </h1>
+      </div>
       {updateSuccess && (
         <div className="rounded-md bg-green-50 ring-1 ring-green-300 p-4 mt-4 -mb-4">
           <div className="flex">
@@ -324,7 +326,7 @@ export function SingleEliminationConfig({
           </div>
         </div>
       )}
-      <div className="-mx-4 mt-8 shadow sm:mx-0 rounded bg-white">
+      <div className="shadow sm:mx-0 rounded bg-white">
         <div className="py-3.5 px-6 text-left text-2xl">
           <form onSubmit={submitData} method="PATCH">
             <Tabs defaultValue="general" className="w-full mt-2">

@@ -76,7 +76,7 @@ export default function TournamentsLayout({
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
-            className="relative z-50 lg:hidden"
+            className="relative z-50 xl:hidden"
             onClose={setSidebarOpen}
           >
             <Transition.Child
@@ -126,7 +126,7 @@ export default function TournamentsLayout({
                     </div>
                   </Transition.Child>
                   {/* Sidebar component, swap this element with another sidebar if you like */}
-                  <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-2 ring-1 ring-white/10">
+                  <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-[#111] px-6 pb-2 ring-1 ring-white/10">
                     <div className="flex h-16 shrink-0 items-center">
                       <img
                         className="h-8 w-auto"
@@ -268,17 +268,17 @@ export default function TournamentsLayout({
           </div>
         </div>
 
-        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 px-4 py-4 shadow-sm sm:px-6 xl:hidden">
+        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-[#111] px-4 py-4 shadow-sm sm:px-6 xl:hidden">
           <button
             type="button"
-            className="-m-2.5 p-2.5 text-gray-400 lg:hidden"
+            className="-m-2.5 p-2.5 text-gray-400 xl:hidden"
             onClick={() => setSidebarOpen(true)}
           >
             <span className="sr-only">Open sidebar</span>
-            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+            <Bars3Icon className="h-6 w-6 text-white" aria-hidden="true" />
           </button>
-          <div className="flex-1 text-sm font-semibold leading-6 text-white">
-            Dashboard
+          <div className="flex-1 text-md text-center font-semibold tracking-wide leading-6 text-white">
+            Organizer
           </div>
           <a href="#">
             <span className="sr-only">Your profile</span>
@@ -290,8 +290,10 @@ export default function TournamentsLayout({
           </a>
         </div>
 
-        <main className="absolute xl:pl-72 h-full top-16 xl:top-0 right-0 bottom-0 left-0">
-          <div className="px-4 sm:px-6 lg:px-8 h-full">{children}</div>
+        <main className="absolute xl:pl-72 top-16 xl:top-0 right-0 bottom-0 left-0">
+          <div className="h-full px-4 pb-4 sm:px-6 sm:pb-6 xl:px-10 xl:pb-10 overflow-y-scroll overflow-x-auto">
+            {children}
+          </div>
         </main>
       </div>
     </>

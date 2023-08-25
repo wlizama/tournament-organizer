@@ -32,9 +32,19 @@ export default async function Matches({ params }: Params) {
   // console.log(stages);
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="text-3xl font-semibold">Match Overview</div>
-      <div className="mt-8 font-medium space-y-2">
+    <div className="">
+      <div className="relative my-10">
+        <h1 className="text-3xl font-semibold">Matches</h1>
+      </div>
+
+      <div className="font-medium space-y-2">
+        <div className="">
+          <Link href={``} className="underline">
+            Overview
+          </Link>
+        </div>
+      </div>
+      <div className="font-medium space-y-2">
         {stages.map((stage) => (
           <div className="" key={stage.id}>
             <Link

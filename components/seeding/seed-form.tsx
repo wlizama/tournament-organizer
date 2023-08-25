@@ -50,6 +50,7 @@ export default function SeedForm({
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [currentSeedIndex, setCurrentSeedIndex] = useState<number | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<Participant | null>(null);
+  const [isHovering, setIsHovering] = useState<number | null>(null);
 
   const formRef = useRef<HTMLFormElement | null>(null);
   const handleExternalSubmit = () => {
@@ -104,10 +105,11 @@ export default function SeedForm({
         // onSubmit(seededParticipants.filter(Boolean) as Participant[])
         onSubmit(seededParticipants)
       )}
+      className="relative h-full box-border flex flex-col m-0 overflow-hidden text-start"
     >
       {/* CARD CONTENT */}
-      <div className="flex-1 p-5 overflow-auto break-words border-b">
-        <div className="flex flex-wrap flex-col m-0 text-sm">
+      <div className="flex-1 p-5 overflow-auto break-words border-b h-full">
+        <div className="flex flex-wrap flex-col m-0 text-sm cursor-pointer">
           <div className="block min-w-[7rem]">
             <div className="flex items-center min-h-[1rem] p-1 cursor-pointer border-b">
               <div className="text-center w-8">#</div>
@@ -121,7 +123,9 @@ export default function SeedForm({
             {seededParticipants.map((seededParticipant, index) => (
               <div
                 key={index}
-                className="flex items-center min-h-[35px] p-1 border-b"
+                className="flex items-center min-h-[35px] p-1 border-b hover:bg-neutral-100"
+                onMouseEnter={() => setIsHovering(index)}
+                onMouseLeave={() => setIsHovering(null)}
               >
                 <div className="box-content ml-0 w-8 text-center">
                   {index + 1}
@@ -140,15 +144,17 @@ export default function SeedForm({
                     <div className="flex-[10_1_0%] text-left w-0 ml-1 overflow-ellipsis whitespace-nowrap box-content">
                       {seededParticipant.name}
                     </div>
-                    <div className="box-content ml-1">
-                      <button
-                        type="button"
-                        className="py-0 text-center align-middle"
-                        onClick={() => handleRemove(index)}
-                      >
-                        <TbX className="h-5 w-5 ml-2 stroke-2" />
-                      </button>
-                    </div>
+                    {isHovering === index && (
+                      <div className="box-content ml-1">
+                        <button
+                          type="button"
+                          className="py-0 text-center align-middle"
+                          onClick={() => handleRemove(index)}
+                        >
+                          <TbX className="h-5 w-5 ml-2 stroke-2" />
+                        </button>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <div className="block box-content ml-1">
@@ -163,16 +169,16 @@ export default function SeedForm({
                 )}
               </div>
             ))}
-            <button type="submit">Seed Teams</button>
-            {isSubmitting && <div className="">(...saving)</div>}
+            {/* <button type="submit">Seed Teams</button> */}
+            {isSubmitting && <div className="mt-4">(...saving)</div>}
             {isSubmitSuccessful && (
-              <>
+              <div className="mt-4">
                 <div className="text-green-500 font-bold">SAVED!</div>
                 {/* <div className="ml-4">OK</div> */}
                 <button className="" onClick={() => reset()}>
                   OK
                 </button>
-              </>
+              </div>
             )}
 
             {modalVisible && (

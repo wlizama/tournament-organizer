@@ -24,8 +24,8 @@ export default async function Placement({ params }: Params) {
   const stages = await getStages(params.tournamentId);
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="relative my-6">
+    <div className="">
+      <div className="relative my-10">
         <h1 className="text-3xl font-semibold">Placement</h1>
       </div>
       <ul

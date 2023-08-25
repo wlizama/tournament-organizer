@@ -86,8 +86,10 @@ export default async function Structure({ params }: Params) {
   const stages = await getStages(params.tournamentId);
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="text-3xl font-semibold">Structure</div>
+    <div className="">
+      <div className="relative my-10">
+        <h1 className="text-3xl font-semibold">Structure</h1>
+      </div>
       <StageSuccessAlert />
       <ul
         role="list"
