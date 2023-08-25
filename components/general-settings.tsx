@@ -146,7 +146,7 @@ export default function GeneralSettings({ tournament }: GeneralSettingsProps) {
 
   return (
     <>
-      <div className="px-4 sm:px-6 lg:px-8">
+      <div className="">
         <button
           className="text-sm mb-4 mt-8 hover:text-[#333]"
           onClick={() => {
@@ -155,9 +155,11 @@ export default function GeneralSettings({ tournament }: GeneralSettingsProps) {
         >
           <span aria-hidden="true">&larr;</span> Back
         </button>
-        <h1 className="text-3xl font-medium">General Settings</h1>
+        <div className="relative mb-10">
+          <h1 className="text-3xl font-medium">General Settings</h1>
+        </div>
         {updateSuccess && (
-          <div className="rounded-md bg-green-50 ring-1 ring-green-300 p-4 mt-4 -mb-4">
+          <div className="rounded-md bg-green-50 ring-1 ring-green-300 p-4 mt-4 mb-4">
             <div className="flex">
               <div className="flex-shrink-0">
                 <CheckCircleIcon
@@ -173,7 +175,7 @@ export default function GeneralSettings({ tournament }: GeneralSettingsProps) {
             </div>
           </div>
         )}
-        <div className="-mx-4 mt-8 shadow sm:mx-0 rounded bg-white">
+        <div className="shadow sm:mx-0 rounded bg-white">
           <div className="py-3.5 px-6 text-left text-2xl">
             <form onSubmit={submitData} method="PATCH">
               <Tabs
