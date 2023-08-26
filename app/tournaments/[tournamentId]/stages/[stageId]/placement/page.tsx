@@ -208,3 +208,5 @@ export default async function StagePlacement({ params }: Params) {
     </div>
   );
 }
+
+export const dynamic = "force-dynamic";

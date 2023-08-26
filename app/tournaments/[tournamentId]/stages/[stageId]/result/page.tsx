@@ -62,8 +62,10 @@ export default async function StageResult({ params }: Params) {
   const links = createLinks(bracket);
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-semibold">{stage!.name}</h1>
+    <div className="">
+      <div className="relative my-10">
+        <h1 className="text-3xl font-semibold">{stage!.name}</h1>
+      </div>
       <div
         className="relative flex flex-col bg-white text-left overflow-hidden rounded m-0 mt-8"
         id="card"

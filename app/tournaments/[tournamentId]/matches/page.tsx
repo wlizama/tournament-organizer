@@ -49,13 +49,6 @@ export default async function Matches({ params }: Params) {
       </div>
 
       <div className="font-medium space-y-2">
-        <div className="">
-          <Link href={``} className="underline">
-            Overview
-          </Link>
-        </div>
-      </div>
-      <div className="font-medium space-y-2">
         {stages.map((stage) => (
           <div className="" key={stage.id}>
             <Link
@@ -70,7 +63,7 @@ export default async function Matches({ params }: Params) {
 
       <div className="mt-8 ring-1 ring-gray-300 sm:mx-0 rounded bg-white">
         <div className="min-w-full divide-y divide-gray-300">
-          <h1 className="py-5 pl-4 pr-3 text-left text-2xl sm:pl-6">
+          <h1 className="p-5 text-left text-2xl font-medium">
             List of Matches
           </h1>
           <ul
@@ -96,7 +89,7 @@ export default async function Matches({ params }: Params) {
                 <div className="grid flex-1 row-auto justify-stretch gap-[1px]">
                   <div className="flex flex-nowrap items-center p-0">
                     <div className="text-ellipsis overflow-hidden whitespace-nowrap flex-[3_1_0%] text-sm">
-                      {match.opponents && match.opponents.length > 0 ? (
+                      {match.opponents[0] && match.opponents.length > 0 ? (
                         (match.opponents[0] as any).participant?.name
                       ) : (
                         <div className="text-neutral-300">To be determined</div>
@@ -105,7 +98,7 @@ export default async function Matches({ params }: Params) {
                   </div>
                   <div className="flex flex-nowrap items-center p-0">
                     <div className="text-ellipsis overflow-hidden whitespace-nowrap flex-[3_1_0%] text-sm">
-                      {match.opponents && match.opponents.length > 0 ? (
+                      {match.opponents[1] && match.opponents.length > 0 ? (
                         (match.opponents[1] as any).participant?.name
                       ) : (
                         <div className="text-neutral-300">To be determined</div>
@@ -115,7 +108,11 @@ export default async function Matches({ params }: Params) {
                 </div>
                 {/* Match status */}
                 <div className="flex flex-col justify-center w-20 text-xs text-center">
-                  To be played
+                  {match.opponents && match.opponents.length == 2 ? (
+                    <div className="">To be played</div>
+                  ) : (
+                    <div className="text-neutral-500">Waiting</div>
+                  )}
                 </div>
               </li>
             ))}
@@ -125,3 +122,5 @@ export default async function Matches({ params }: Params) {
     </div>
   );
 }
+
+export const dynamic = "force-dynamic";
