@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useMemo, useState } from "react";
 import { Dialog, Disclosure, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -34,7 +34,7 @@ type Navigation = {
   children?: Navigation[];
 };
 
-export default function TournamentNavigation({ stages, params }: Props) {
+export function TournamentNavigation({ stages, params }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { data: session, status } = useSession();
   const pathname = usePathname();
