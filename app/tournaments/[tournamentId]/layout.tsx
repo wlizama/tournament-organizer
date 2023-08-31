@@ -1,5 +1,4 @@
-import TournamentNavigation from "@/components/navigation/tournament-navigation";
-// import SidebarNavigation from "@/components/navigation/tournament-navigation";
+import { TournamentNavigation } from "@/components/navigation/tournament-navigation";
 import prisma from "@/lib/prisma";
 
 async function getStage(tournamentId: string) {
