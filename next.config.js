@@ -4,7 +4,7 @@ const nextConfig = {
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     dangerouslyAllowSVG: true,
-    domains: ['seeklogo.com', 'organizer.toornament.com']
+    domains: ['seeklogo.com', 'organizer.toornament.com', 'www.flaticon.com']
   }
 }
 

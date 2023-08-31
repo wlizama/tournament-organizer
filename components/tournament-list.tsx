@@ -54,7 +54,7 @@ export default function TournamentList() {
                     />
                   ) : (
                     <Image
-                      src="https://seeklogo.com/images/V/valorant-logo-FAB2CA0E55-seeklogo.com.png"
+                      src="/img/videogames.png"
                       className="h-12 w-12 flex-none rounded"
                       width={48}
                       height={48}

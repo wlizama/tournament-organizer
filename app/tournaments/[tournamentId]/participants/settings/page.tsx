@@ -1,4 +1,4 @@
-import ParticipantSettings from "@/components/participant-settings";
+import ParticipantSettings from "@/components/settings/participant-settings";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";

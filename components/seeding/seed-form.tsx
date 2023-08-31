@@ -32,7 +32,7 @@ export default function SeedForm({
   const onSubmit = async (seeding: any) => {
     try {
       const body = { stageId, seeding };
-      const res = await fetch(`/api/matches`, {
+      const res = await fetch(`/api/matches/generate-matches`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

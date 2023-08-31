@@ -1,4 +1,4 @@
-import GeneralSettings from "@/components/general-settings";
+import GeneralSettings from "@/components/settings/general-settings";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";

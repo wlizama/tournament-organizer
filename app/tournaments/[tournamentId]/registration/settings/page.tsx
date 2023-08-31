@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import RegistrationSettings from "@/components/registration-settings";
+import RegistrationSettings from "@/components/settings/registration-settings";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
