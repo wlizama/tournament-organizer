@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { Dialog, Disclosure, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -9,6 +9,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { signOut, useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -26,72 +27,99 @@ interface Props {
   }[];
 }
 
+type Navigation = {
+  name: string;
+  href?: string;
+  current: boolean;
+  children?: Navigation[];
+};
+
 export default function TournamentNavigation({ stages, params }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { data: session, status } = useSession();
+  const pathname = usePathname();
 
-  function getStagesNav(url: string) {
-    return stages.map((stage) => ({
-      name: stage.number + ". " + stage.name,
-      href: `/tournaments/${stage.tournamentId}/stages/${stage.id}/${url}`,
-      current: false,
-    }));
-  }
+  const getStagesNav = useCallback(
+    (url: string) => {
+      return stages.map((stage) => ({
+        name: stage.number + ". " + stage.name,
+        href: `/tournaments/${stage.tournamentId}/stages/${stage.id}/${url}`,
+        current:
+          pathname ===
+          `/tournaments/${stage.tournamentId}/stages/${stage.id}/${url}`,
+      }));
+    },
+    [stages, pathname]
+  );
 
-  const navigation = [
-    { name: "Tournaments", href: "/tournaments", current: false },
-    {
-      name: "Settings",
-      current: false,
-      children: [
-        {
-          name: "General",
-          href: `/tournaments/${params.tournamentId}/edit`,
-          current: false,
-        },
-        {
-          name: "Registration",
-          href: `/tournaments/${params.tournamentId}/registration/settings`,
-          current: false,
-        },
-        {
-          name: "Participants",
-          href: `/tournaments/${params.tournamentId}/participants/settings`,
-          current: false,
-        },
-      ],
-    },
-    {
-      name: "Structure",
-      href: `/tournaments/${params.tournamentId}/stages`,
-      current: false,
-    },
+  const navigation: Navigation[] = useMemo(
+    () => [
+      {
+        name: "Tournaments",
+        href: "/tournaments",
+        current: pathname === "/tournaments",
+      },
+      {
+        name: "Settings",
+        current: false,
+        children: [
+          {
+            name: "General",
+            href: `/tournaments/${params.tournamentId}/edit`,
+            current: pathname === `/tournaments/${params.tournamentId}/edit`,
+          },
+          {
+            name: "Registration",
+            href: `/tournaments/${params.tournamentId}/registration/settings`,
+            current:
+              pathname ===
+              `/tournaments/${params.tournamentId}/registration/settings`,
+          },
+          {
+            name: "Participants",
+            href: `/tournaments/${params.tournamentId}/participants/settings`,
+            current:
+              pathname ===
+              `/tournaments/${params.tournamentId}/participants/settings`,
+          },
+        ],
+      },
+      {
+        name: "Structure",
+        href: `/tournaments/${params.tournamentId}/stages`,
+        current: pathname === `/tournaments/${params.tournamentId}/stages`,
+      },
 
-    {
-      name: "Placement",
-      current: false,
-      children: [
-        {
-          name: "Overview",
-          href: `/tournaments/${params.tournamentId}/placement`,
-          current: false,
-        },
-        ...getStagesNav("placement"),
-      ],
-    },
-    {
-      name: "Matches",
-      current: false,
-      children: [
-        {
-          name: "Overview",
-          href: `/tournaments/${params.tournamentId}/matches`,
-          current: false,
-        },
-        ...getStagesNav("result"),
-      ],
-    },
-  ];
+      {
+        name: "Placement",
+        current: false,
+        children: [
+          {
+            name: "Overview",
+            href: `/tournaments/${params.tournamentId}/placement`,
+            current:
+              pathname === `/tournaments/${params.tournamentId}/placement`,
+          },
+          ...getStagesNav("placement"),
+        ],
+      },
+      {
+        name: "Matches",
+        current: false,
+        children: [
+          {
+            name: "Overview",
+            href: `/tournaments/${params.tournamentId}/matches`,
+            current: pathname.startsWith(
+              `/tournaments/${params.tournamentId}/matches`
+            ),
+          },
+          ...getStagesNav("result"),
+        ],
+      },
+    ],
+    [pathname, params.tournamentId, getStagesNav]
+  );
 
   return (
     <div>
@@ -212,7 +240,13 @@ export default function TournamentNavigation({ stages, params }: Props) {
                           {item.name}
                         </a>
                       ) : (
-                        <Disclosure as="div">
+                        <Disclosure
+                          as="div"
+                          key={item.name}
+                          defaultOpen={item.children.some(
+                            (child) => child.current
+                          )}
+                        >
                           {({ open }) => (
                             <>
                               <Disclosure.Button
@@ -232,8 +266,9 @@ export default function TournamentNavigation({ stages, params }: Props) {
                                   aria-hidden="true"
                                 />
                               </Disclosure.Button>
+
                               <Disclosure.Panel as="ul" className="mt-1 px-2">
-                                {item.children.map((subItem) => (
+                                {item.children?.map((subItem) => (
                                   <li key={subItem.name}>
                                     {/* 44px */}
                                     <Disclosure.Button
