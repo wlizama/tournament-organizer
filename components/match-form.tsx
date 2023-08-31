@@ -7,6 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
 
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
+import { FaCircleXmark } from "react-icons/fa6";
+
 import { Group, Match, Round, Stage } from "@prisma/client";
 
 import { Controller, useForm } from "react-hook-form";
@@ -57,14 +59,18 @@ interface MatchProps {
 
 export default function MatchForm({ match }: MatchProps) {
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
-  const [selected, setSelected] = useState("");
-  const [result, setResult] = useState(false);
-  const router = useRouter();
+  const [teamOneValue, setTeamOneValue] = useState<string | false | 0 | null>(
+    ""
+  );
+  const [teamTwoValue, setTeamTwoValue] = useState<string | false | 0 | null>(
+    ""
+  );
   // console.log(match.opponents);
 
   const {
     control,
     register,
+    reset,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm({
@@ -90,21 +96,28 @@ export default function MatchForm({ match }: MatchProps) {
   }, []);
 
   const submitData = async (data: any) => {
-    console.log(data);
-    // try {
-    //   const res = await fetch(`/api/matches/${match.id}`, {
-    //     method: "PATCH",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(data),
-    //   });
-    //   if (res.ok) {
-    //     localStorage.setItem("submitted", "true");
-    //     window.location.reload();
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    // console.log(data);
+    try {
+      const res = await fetch(`/api/matches/${match.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        localStorage.setItem("submitted", "true");
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
+
+  function handleReset() {
+    reset({
+      opponent1: { result: "" },
+      opponent2: { result: "" },
+    });
+  }
 
   return (
     <>
@@ -175,6 +188,32 @@ export default function MatchForm({ match }: MatchProps) {
                     </div>
                   </div>
                 )}
+                {match.status === "completed" && (
+                  <div className="grid grid-flow-col grid-cols-[1fr_1fr] justify-items-center items-center gap-5 text-7xl">
+                    {/* result 1 */}
+                    {(match.opponents[0] as Opponent).result === "win" && (
+                      <div className="w-full h-20 overflow-hidden grid justify-center content-center p-2 box-border text-center bg-green-500 text-white rounded">
+                        {(match?.opponents[0] as Opponent).score}
+                      </div>
+                    )}
+                    {(match.opponents[0] as Opponent).result === "loss" && (
+                      <div className="w-full h-20 overflow-hidden grid justify-center content-center p-2 box-border text-center bg-red-500 text-white rounded">
+                        {(match?.opponents[0] as Opponent).score}
+                      </div>
+                    )}
+                    {/* result 2 */}
+                    {(match.opponents[1] as Opponent).result === "win" && (
+                      <div className="w-full h-20 overflow-hidden grid justify-center content-center p-2 box-border text-center bg-green-500 text-white rounded">
+                        {(match?.opponents[1] as Opponent).score}
+                      </div>
+                    )}
+                    {(match.opponents[1] as Opponent).result === "loss" && (
+                      <div className="w-full h-20 overflow-hidden grid justify-center content-center p-2 box-border text-center bg-red-500 text-white rounded">
+                        {(match?.opponents[1] as Opponent).score}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Opponent #2 */}
@@ -221,17 +260,21 @@ export default function MatchForm({ match }: MatchProps) {
                       <div className="inline-flex flex-col relative">
                         <div className="flex flex-col">
                           <div className="flex flex-wrap py-3 items-center gap-3 border-b text-neutral-500">
-                            <div className="flex-[8_0_8rem] order-1 uppercase text-xs break-words">
+                            <div className="block flex-[8_0_8rem] order-1 uppercase text-xs break-words">
                               Name
                             </div>
-                            <div className="flex-[1_0_5rem] order-2 uppercase text-xs text-center break-words">
+                            <div className="block flex-[1_0_5rem] order-2 uppercase text-xs text-center break-words">
                               Forfeit
                             </div>
-                            <div className="flex-[1_1_3rem] order-4 uppercase text-xs text-center break-words">
+                            <div className="block flex-[1_1_3rem] order-4 uppercase text-xs text-center break-words">
                               Score
                             </div>
-                            <div className="flex-[1_1_9rem] order-5 uppercase text-xs text-center break-words">
+                            <div className="flex-[1_1_9rem] flex items-center order-5 uppercase text-xs text-center justify-center break-words">
                               Result
+                              <FaCircleXmark
+                                className=" h-3.5 w-3.5 cursor-pointer ml-1"
+                                onClick={() => handleReset()}
+                              />
                             </div>
                           </div>
                           {/* OPPONENT #1 */}
@@ -268,40 +311,34 @@ export default function MatchForm({ match }: MatchProps) {
                                 </div>
                               </div>
                               {/* RESULT */}
-                              {/* <div className="flex-[1_1_9rem] order-5 text-center">
-                                <div className="relative">
-                                  <input
-                                    type="text"
-                                    {...register("opponent1.result")}
-                                    className="w-full"
-                                  />
-                                </div>
-                              </div> */}
                               <div className="flex-[1_1_9rem] order-5 text-center">
                                 <Controller
                                   name="opponent1.result"
                                   control={control}
                                   render={({ field }) => (
                                     <RadioGroup
-                                      value={field}
-                                      onChange={field.onChange}
+                                      value={field.value}
+                                      onChange={(value) => {
+                                        field.onChange(value);
+                                        // setTeamOneValue(value);
+                                      }}
                                       className={
-                                        "block overflow-hidden rounded"
+                                        "block overflow-hidden rounded text-sm"
                                       }
                                     >
                                       <RadioGroup.Label className={"sr-only"}>
                                         Result
                                       </RadioGroup.Label>
-                                      <div className="flex flex-wrap box-border">
-                                        <div className="flex">
+                                      <div className="flex flex-wrap box-border ms-[-1px] me-[-1px]">
+                                        <div className="block flex-1">
                                           <RadioGroup.Option value={"win"}>
-                                            {({ checked }) => (
+                                            {({ active, checked }) => (
                                               <span
                                                 className={classNames(
                                                   checked
-                                                    ? "bg-blue-200"
+                                                    ? "bg-green-500 text-white"
                                                     : "bg-neutral-200",
-                                                  "block relative cursor-pointer py-2 px-3"
+                                                  "block relative cursor-pointer py-2 px-3 border border-white"
                                                 )}
                                               >
                                                 W
@@ -309,34 +346,38 @@ export default function MatchForm({ match }: MatchProps) {
                                             )}
                                           </RadioGroup.Option>
                                         </div>
-                                        <RadioGroup.Option value={"draw"}>
-                                          {({ checked }) => (
-                                            <span
-                                              className={classNames(
-                                                checked
-                                                  ? "bg-blue-200"
-                                                  : "bg-neutral-200",
-                                                "block relative cursor-pointer py-2 px-3"
-                                              )}
-                                            >
-                                              D
-                                            </span>
-                                          )}
-                                        </RadioGroup.Option>
-                                        <RadioGroup.Option value={"loss"}>
-                                          {({ checked }) => (
-                                            <span
-                                              className={classNames(
-                                                checked
-                                                  ? "bg-blue-200"
-                                                  : "bg-neutral-200",
-                                                "block relative cursor-pointer py-2 px-3"
-                                              )}
-                                            >
-                                              L
-                                            </span>
-                                          )}
-                                        </RadioGroup.Option>
+                                        <div className="block flex-1">
+                                          <RadioGroup.Option value={"draw"}>
+                                            {({ checked }) => (
+                                              <span
+                                                className={classNames(
+                                                  checked
+                                                    ? "bg-blue-500 text-white"
+                                                    : "bg-neutral-200",
+                                                  "block relative cursor-pointer py-2 px-3 border border-white"
+                                                )}
+                                              >
+                                                D
+                                              </span>
+                                            )}
+                                          </RadioGroup.Option>
+                                        </div>
+                                        <div className="block flex-1">
+                                          <RadioGroup.Option value={"loss"}>
+                                            {({ checked }) => (
+                                              <span
+                                                className={classNames(
+                                                  checked
+                                                    ? "bg-red-500 text-white"
+                                                    : "bg-neutral-200",
+                                                  "block relative cursor-pointer py-2 px-3 border border-white"
+                                                )}
+                                              >
+                                                L
+                                              </span>
+                                            )}
+                                          </RadioGroup.Option>
+                                        </div>
                                       </div>
                                     </RadioGroup>
                                   )}
@@ -380,13 +421,76 @@ export default function MatchForm({ match }: MatchProps) {
                               </div>
                               {/* RESULT */}
                               <div className="flex-[1_1_9rem] order-5 text-center">
-                                <div className="relative">
-                                  <input
-                                    type="text"
-                                    {...register("opponent2.result")}
-                                    className="w-full"
-                                  />
-                                </div>
+                                <Controller
+                                  name="opponent2.result"
+                                  control={control}
+                                  render={({ field }) => (
+                                    <RadioGroup
+                                      value={field.value}
+                                      onChange={(value) => {
+                                        field.onChange(value);
+                                        setTeamTwoValue(value);
+                                      }}
+                                      className={
+                                        "block overflow-hidden rounded text-sm"
+                                      }
+                                    >
+                                      <RadioGroup.Label className={"sr-only"}>
+                                        Result
+                                      </RadioGroup.Label>
+                                      <div className="flex flex-wrap box-border ms-[-1px] me-[-1px]">
+                                        <div className="block flex-1">
+                                          <RadioGroup.Option value={"win"}>
+                                            {({ checked }) => (
+                                              <span
+                                                className={classNames(
+                                                  checked
+                                                    ? "bg-green-500 text-white"
+                                                    : "bg-neutral-200",
+                                                  "block relative cursor-pointer py-2 px-3 border border-white"
+                                                )}
+                                              >
+                                                W
+                                              </span>
+                                            )}
+                                          </RadioGroup.Option>
+                                        </div>
+                                        <div className="block flex-1">
+                                          <RadioGroup.Option value={"draw"}>
+                                            {({ checked }) => (
+                                              <span
+                                                className={classNames(
+                                                  checked
+                                                    ? "bg-blue-500 text-white"
+                                                    : "bg-neutral-200",
+                                                  "block relative cursor-pointer py-2 px-3 border border-white"
+                                                )}
+                                              >
+                                                D
+                                              </span>
+                                            )}
+                                          </RadioGroup.Option>
+                                        </div>
+                                        <div className="block flex-1">
+                                          <RadioGroup.Option value={"loss"}>
+                                            {({ checked }) => (
+                                              <span
+                                                className={classNames(
+                                                  checked
+                                                    ? "bg-red-500 text-white"
+                                                    : "bg-neutral-200",
+                                                  "block relative cursor-pointer py-2 px-3 border border-white"
+                                                )}
+                                              >
+                                                L
+                                              </span>
+                                            )}
+                                          </RadioGroup.Option>
+                                        </div>
+                                      </div>
+                                    </RadioGroup>
+                                  )}
+                                />
                               </div>
                             </div>
                           </div>
