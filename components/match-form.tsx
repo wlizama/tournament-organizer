@@ -4,15 +4,21 @@ import { useEffect, useState } from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { useRouter } from "next/navigation";
-
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
-import { FaCircleXmark } from "react-icons/fa6";
+import {
+  FaBolt,
+  FaCircleXmark,
+  FaLock,
+  FaPencil,
+  FaRegClock,
+} from "react-icons/fa6";
 
 import { Group, Match, Round, Stage } from "@prisma/client";
 
 import { Controller, useForm } from "react-hook-form";
 import { RadioGroup } from "@headlessui/react";
+import { UpdateSuccess } from "./updateSuccess";
+import Link from "next/link";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -58,7 +64,6 @@ interface MatchProps {
 }
 
 export default function MatchForm({ match }: MatchProps) {
-  const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
   const [teamOneValue, setTeamOneValue] = useState<string | false | 0 | null>(
     ""
   );
@@ -86,15 +91,6 @@ export default function MatchForm({ match }: MatchProps) {
     },
   });
 
-  useEffect(() => {
-    const isSubmitted = localStorage.getItem("submitted");
-    if (isSubmitted) {
-      setUpdateSuccess(true);
-      localStorage.removeItem("submitted");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const submitData = async (data: any) => {
     // console.log(data);
     try {
@@ -106,6 +102,22 @@ export default function MatchForm({ match }: MatchProps) {
       if (res.ok) {
         localStorage.setItem("submitted", "true");
         window.location.reload();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const updateMatchAndBack = async (data: any) => {
+    try {
+      const res = await fetch(`/api/matches/${match.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        localStorage.setItem("submitted", "true");
+        window.location.href = `/tournaments/${match.tournamentId}/matches`;
       }
     } catch (error) {
       console.error(error);
@@ -128,24 +140,8 @@ export default function MatchForm({ match }: MatchProps) {
             {match.round.number}.{match.number}
           </h1>
         </div>
-        {updateSuccess && (
-          <div className="-mt-4 rounded-md bg-green-50 ring-1 ring-green-300 p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <CheckCircleIcon
-                  className="h-5 w-5 text-green-400"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-green-800">
-                  Successfully updated
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-        <div className="mt-4 shadow sm:mx-0 rounded bg-white">
+        <UpdateSuccess />
+        <div className="shadow sm:mx-0 rounded bg-white">
           <div className="relative grid grid-flow-row p-5 gap-5">
             {/* SECONDARY */}
             <div className="w-full grid justify-center text-center">
@@ -172,7 +168,16 @@ export default function MatchForm({ match }: MatchProps) {
                   <div className="grid grid-flow-col grid-cols-[1fr_1fr] justify-items-center items-center gap-5 text-7xl">
                     {/* result 1 */}
                     <div className="w-full h-20 overflow-hidden grid justify-center content-center p-2 box-border text-center">
-                      {(match.opponents[0] as Opponent).score !== null ? (
+                      {/* {(match.opponents[0] as Opponent) &&
+                      (match.opponents[0] as Opponent).score !== null ? (
+                        (match.opponents[0] as Opponent).score
+                      ) : (
+                        <>-</>
+                      )} */}
+                      {match.opponents[0] &&
+                      Object.keys(match.opponents[0] as Opponent).length !==
+                        0 &&
+                      (match.opponents[0] as Opponent).score !== null ? (
                         (match.opponents[0] as Opponent).score
                       ) : (
                         <>-</>
@@ -180,7 +185,16 @@ export default function MatchForm({ match }: MatchProps) {
                     </div>
                     {/* result 2 */}
                     <div className="w-full h-20 overflow-hidden grid justify-center content-center p-2 box-border text-center">
-                      {(match.opponents[1] as Opponent).score !== null ? (
+                      {/* {(match.opponents[1] as Opponent) &&
+                      (match.opponents[1] as Opponent).score !== null ? (
+                        (match.opponents[1] as Opponent).score
+                      ) : (
+                        <>-</>
+                      )} */}
+                      {match.opponents[1] &&
+                      Object.keys(match.opponents[1] as Opponent).length !==
+                        0 &&
+                      (match.opponents[1] as Opponent).score !== null ? (
                         (match.opponents[1] as Opponent).score
                       ) : (
                         <>-</>
@@ -230,15 +244,30 @@ export default function MatchForm({ match }: MatchProps) {
             {/* SECONDARY */}
             <div className="w-full grid justify-center text-center">
               {match.status === "pending" && (
-                <div className="text-base text-neutral-500">Match pending</div>
-              )}
-              {match.status === "running" && (
-                <div className="text-base text-neutral-500">
-                  Match in progress
+                <div className="flex items-center text-base text-neutral-500">
+                  <FaRegClock className="mr-1" />
+                  <span>Match pending</span>
                 </div>
               )}
-              {match.status === "completed" && (
-                <div className="text-base text-green-500">Match completed</div>
+              {match.status === "running" && (
+                <div className="flex items-center text-base text-neutral-500">
+                  <FaBolt className="mr-1" />
+                  <span>Match in progress</span>
+                </div>
+              )}
+              {match.status === "completed" &&
+                match.report_closed === false && (
+                  <div className="flex items-center text-base text-green-500">
+                    <FaPencil className="mr-1" />
+                    <span>Match completed</span>
+                  </div>
+                )}
+
+              {match.report_closed && (
+                <div className="flex items-center text-base text-orange-500">
+                  <FaLock className="mr-1" />
+                  <span>Match locked</span>
+                </div>
               )}
             </div>
           </div>
@@ -271,10 +300,12 @@ export default function MatchForm({ match }: MatchProps) {
                             </div>
                             <div className="flex-[1_1_9rem] flex items-center order-5 uppercase text-xs text-center justify-center break-words">
                               Result
-                              <FaCircleXmark
-                                className=" h-3.5 w-3.5 cursor-pointer ml-1"
+                              <button
+                                disabled={match.report_closed}
                                 onClick={() => handleReset()}
-                              />
+                              >
+                                <FaCircleXmark className=" h-3.5 w-3.5 cursor-pointer ml-1" />
+                              </button>
                             </div>
                           </div>
                           {/* OPPONENT #1 */}
@@ -305,6 +336,7 @@ export default function MatchForm({ match }: MatchProps) {
                                     type="number"
                                     {...register("opponent1.score", {
                                       valueAsNumber: true,
+                                      disabled: match.report_closed,
                                     })}
                                     className="w-full"
                                   />
@@ -318,6 +350,7 @@ export default function MatchForm({ match }: MatchProps) {
                                   render={({ field }) => (
                                     <RadioGroup
                                       value={field.value}
+                                      disabled={match.report_closed}
                                       onChange={(value) => {
                                         field.onChange(value);
                                         // setTeamOneValue(value);
@@ -414,6 +447,7 @@ export default function MatchForm({ match }: MatchProps) {
                                     type="number"
                                     {...register("opponent2.score", {
                                       valueAsNumber: true,
+                                      disabled: match.report_closed,
                                     })}
                                     className="w-full"
                                   />
@@ -427,6 +461,7 @@ export default function MatchForm({ match }: MatchProps) {
                                   render={({ field }) => (
                                     <RadioGroup
                                       value={field.value}
+                                      disabled={match.report_closed}
                                       onChange={(value) => {
                                         field.onChange(value);
                                         setTeamTwoValue(value);
@@ -496,39 +531,6 @@ export default function MatchForm({ match }: MatchProps) {
                           </div>
                         </div>
                       </div>
-                      {/* <div className="">
-                        <label
-                          htmlFor="discord-link"
-                          className="block text-sm leading-6 text-gray-900"
-                        >
-                          Registration closing
-                          <span className="pl-2 text-xs font-light text-neutral-500">
-                            timezone: Example/Asia
-                          </span>
-                        </label>
-                        <div className="grid grid-cols-3 items-start space-x-2">
-                          <div className="col-start-1 col-span-2">
-                            <input
-                              type="date"
-                              name="discord-link"
-                              id="discord-link"
-                              // value={closingDate || ""}
-                              // onChange={(e) => setClosingDate(e.target.value)}
-                              className="block w-full rounded border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-neutral-600 sm:text-sm sm:leading-6"
-                            />
-                          </div>
-                          <div className="col-span-1">
-                            <input
-                              type="time"
-                              name="registration-closing-time"
-                              id="registration-closing-time"
-                              // value={closingTime || ""}
-                              // onChange={(e) => setClosingTime(e.target.value)}
-                              className="block w-full rounded border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-neutral-600 sm:text-sm sm:leading-6"
-                            />
-                          </div>
-                        </div>
-                      </div> */}
                     </div>
                   </div>
                 </TabsContent>
@@ -540,7 +542,7 @@ export default function MatchForm({ match }: MatchProps) {
                           htmlFor="contact-email"
                           className="block text-sm leading-6 text-gray-900 overflow-visible"
                         >
-                          Registration opening
+                          Scheduled date
                           <span className="pl-2 text-xs font-light text-neutral-500">
                             (timezone: {match.tournament.timezone})
                           </span>
@@ -611,12 +613,27 @@ export default function MatchForm({ match }: MatchProps) {
                 </TabsContent>
               </Tabs>
 
-              <div className="mt-6 flex items-center justify-end gap-x-6">
+              <div className="mt-6 flex items-center justify-end gap-3">
+                <Link
+                  href={`/tournaments/${match.tournamentId}/matches`}
+                  className="flex items-center ml-3 rounded justify-center border border-transparent bg-neutral-100 py-2 px-5 text-sm text-black hover:bg-neutral-200"
+                >
+                  <span>&larr; Back</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleSubmit(updateMatchAndBack)}
+                  className="flex items-center rounded bg-[#111] px-5 py-2 text-sm text-white shadow-sm hover:bg-[#333] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                >
+                  <FaPencil className="mr-2" />
+                  <span>Update + Back</span>
+                </button>
                 <button
                   type="submit"
-                  className="rounded bg-[#111] px-5 py-2 text-sm text-white shadow-sm hover:bg-[#333] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  className="flex items-center rounded bg-[#111] px-5 py-2 text-sm text-white shadow-sm hover:bg-[#333] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
-                  Update
+                  <FaPencil className="mr-2" />
+                  <span>Update</span>
                 </button>
               </div>
             </form>

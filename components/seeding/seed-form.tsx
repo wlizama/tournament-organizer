@@ -5,6 +5,10 @@ import { useForm } from "react-hook-form";
 import { TbCheck, TbPencil, TbPlus, TbX } from "react-icons/tb";
 import TeamSelectModal from "./team-select-modal";
 
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(" ");
+}
+
 interface Props {
   numSeeds: number;
   participants: Participant[];
@@ -12,11 +16,12 @@ interface Props {
   seeds: any;
 }
 
-interface Participant {
+type Participant = {
   id: string;
   name: string;
   created_at: Date;
-}
+  started?: boolean;
+};
 
 export default function SeedForm({
   numSeeds,
@@ -53,11 +58,6 @@ export default function SeedForm({
   const [isHovering, setIsHovering] = useState<number | null>(null);
 
   const formRef = useRef<HTMLFormElement | null>(null);
-  const handleExternalSubmit = () => {
-    if (formRef.current) {
-      formRef.current.dispatchEvent(new Event("submit"));
-    }
-  };
 
   useEffect(() => {
     setSeededParticipants(seeds);
@@ -98,6 +98,8 @@ export default function SeedForm({
     setSeededParticipants(newSeededParticipants);
   };
 
+  // console.log(seededParticipants);
+
   return (
     <form
       ref={formRef}
@@ -111,7 +113,7 @@ export default function SeedForm({
       <div className="flex-1 p-5 overflow-auto break-words border-b h-full">
         <div className="flex flex-wrap flex-col m-0 text-sm cursor-pointer">
           <div className="block min-w-[7rem]">
-            <div className="flex items-center min-h-[1rem] p-1 cursor-pointer border-b">
+            <div className="flex items-center min-h-[1rem] p-1 cursor-pointer border-b text-neutral-500">
               <div className="text-center w-8">#</div>
               <div className="ml-1 w-8"></div>
               <div className="flex-[10_1_0%] text-left w-0 ml-1 overflow-ellipsis whitespace-nowrap">
@@ -123,7 +125,13 @@ export default function SeedForm({
             {seededParticipants.map((seededParticipant, index) => (
               <div
                 key={index}
-                className="flex items-center min-h-[35px] p-1 border-b hover:bg-neutral-100"
+                // className="flex items-center min-h-[35px] p-1 border-b hover:bg-neutral-100"
+                className={classNames(
+                  seededParticipant?.started !== true
+                    ? "text-black"
+                    : "text-neutral-300 cursor-not-allowed",
+                  "flex items-center min-h-[35px] p-1 border-b hover:bg-neutral-100"
+                )}
                 onMouseEnter={() => setIsHovering(index)}
                 onMouseLeave={() => setIsHovering(null)}
               >
@@ -132,29 +140,32 @@ export default function SeedForm({
                 </div>
                 {seededParticipant ? (
                   <>
-                    <div className="block box-content ml-1">
-                      <button
-                        type="button"
-                        className="py-0 text-center w-8 align-middle"
-                        onClick={() => handleOpenModal(index)}
-                      >
-                        <TbPencil className="h-5 w-5 ml-2 text-blue-500 stroke-2" />
-                      </button>
-                    </div>
-                    <div className="flex-[10_1_0%] text-left w-0 ml-1 overflow-ellipsis whitespace-nowrap box-content">
-                      {seededParticipant.name}
-                    </div>
-                    {isHovering === index && (
-                      <div className="box-content ml-1">
+                    {seededParticipant.started !== true && (
+                      <div className="block box-content ml-1">
                         <button
                           type="button"
-                          className="py-0 text-center align-middle"
-                          onClick={() => handleRemove(index)}
+                          className="py-0 text-center w-8 align-middle"
+                          onClick={() => handleOpenModal(index)}
                         >
-                          <TbX className="h-5 w-5 ml-2 stroke-2" />
+                          <TbPencil className="h-5 w-5 ml-2 text-blue-500 stroke-2" />
                         </button>
                       </div>
                     )}
+                    <div className="flex-[10_1_0%] text-left w-0 ml-1 overflow-ellipsis whitespace-nowrap box-content">
+                      {seededParticipant.name}
+                    </div>
+                    {isHovering === index &&
+                      seededParticipant.started !== true && (
+                        <div className="box-content ml-1">
+                          <button
+                            type="button"
+                            className="py-0 text-center align-middle"
+                            onClick={() => handleRemove(index)}
+                          >
+                            <TbX className="h-5 w-5 ml-2 stroke-2" />
+                          </button>
+                        </div>
+                      )}
                   </>
                 ) : (
                   <div className="block box-content ml-1">

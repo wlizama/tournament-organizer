@@ -1,3 +1,4 @@
+import { UpdateSuccess } from "@/components/updateSuccess";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 
@@ -20,6 +21,22 @@ async function getMatches(id: string) {
   });
 }
 
+type Participant = {
+  id: string;
+  name: string;
+  created_at: string;
+};
+
+type Opponent = {
+  forfeit: string;
+  number: number;
+  participant: Participant;
+  position: number;
+  rank: number | null;
+  result: string;
+  score: number | null;
+};
+
 interface Params {
   params: {
     tournamentId: string;
@@ -34,6 +51,8 @@ export default async function Matches({ params }: Params) {
       <div className="relative my-10">
         <h1 className="text-3xl font-semibold">Matches</h1>
       </div>
+
+      <UpdateSuccess />
 
       <div className="ring-1 ring-gray-300 sm:mx-0 rounded bg-white">
         <div className="min-w-full divide-y divide-gray-300">
@@ -64,8 +83,10 @@ export default async function Matches({ params }: Params) {
                   <div className="grid flex-1 row-auto justify-stretch gap-[1px]">
                     <div className="flex flex-nowrap items-center p-0">
                       <div className="text-ellipsis overflow-hidden whitespace-nowrap flex-[3_1_0%] text-sm">
-                        {match.opponents[0] && match.opponents.length > 0 ? (
-                          (match.opponents[0] as any).participant?.name
+                        {match.opponents[0] &&
+                        Object.keys(match.opponents[0] as Opponent).length !==
+                          0 ? (
+                          (match.opponents[0] as Opponent).participant?.name
                         ) : (
                           <div className="text-neutral-300">
                             To be determined
@@ -75,9 +96,12 @@ export default async function Matches({ params }: Params) {
                     </div>
                     <div className="flex flex-nowrap items-center p-0">
                       <div className="text-ellipsis overflow-hidden whitespace-nowrap flex-[3_1_0%] text-sm">
-                        {match.opponents[1] && match.opponents.length > 0 ? (
-                          (match.opponents[1] as any).participant?.name
+                        {match.opponents[1] &&
+                        Object.keys(match.opponents[1] as Opponent).length !==
+                          0 ? (
+                          (match.opponents[1] as Opponent).participant.name
                         ) : (
+                          // <>testing</>
                           <div className="text-neutral-300">
                             To be determined
                           </div>
@@ -87,8 +111,11 @@ export default async function Matches({ params }: Params) {
                   </div>
                   {/* Match status */}
                   <div className="flex flex-col justify-center w-20 text-xs text-center">
-                    {match.opponents && match.opponents.length == 2 ? (
+                    {match.opponents.length == 2 &&
+                    match.status !== "completed" ? (
                       <div className="">To be played</div>
+                    ) : match.status === "completed" ? (
+                      <div className="text-green-500">Completed</div>
                     ) : (
                       <div className="text-neutral-500">Waiting</div>
                     )}

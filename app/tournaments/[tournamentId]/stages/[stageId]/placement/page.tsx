@@ -35,23 +35,25 @@ async function getSeeds(stageId: string) {
       number: "asc",
     },
     select: {
+      report_closed: true,
       opponents: true,
     },
   });
 
-  // const seeds = firstRoundMatches
-  //   .map((match) => match.opponents)
-  //   .flat()
-  //   .sort((a: any, b: any) => a.number - b.number)
-  //   .map((opponent: any) => opponent.participant);
-
   const seeds = new Array(firstRoundMatches.length * 2).fill(null);
 
-  firstRoundMatches.forEach((match) => {
+  firstRoundMatches.forEach((match: any) => {
+    const matchStarted = match.opponents.some(
+      (opponent: any) => opponent.score !== null
+    );
+
     match.opponents.forEach((opponent: any) => {
-      // seeds[opponent.number - 1] = opponent;
       if (opponent.participant) {
-        seeds[opponent.number - 1] = opponent.participant;
+        // seeds[opponent.number - 1] = opponent.participant;
+        seeds[opponent.number - 1] = {
+          ...opponent.participant,
+          started: matchStarted,
+        };
       }
     });
   });
@@ -104,7 +106,14 @@ export default async function StagePlacement({ params }: Params) {
                 numSeeds={stageSize}
                 participants={participants}
                 stageId={stage!.id}
-                seeds={seeds}
+                seeds={
+                  seeds as {
+                    id: string;
+                    name: string;
+                    created_at: Date;
+                    started: boolean;
+                  }[]
+                }
               />
             </div>
           </div>
@@ -157,22 +166,14 @@ export default async function StagePlacement({ params }: Params) {
                         >
                           <div className="flex relative box-border min-w-[12rem] p-2 rounded border border-neutral-300">
                             <div
-                              className="flex absolute -top-2 left-2 right-2 z-[1] text-xs"
-                              id="header"
-                            >
-                              <div className="text-ellipsis overflow-hidden whitespace-nowrap bg-white px-1 mb-2 text-neutral-500">
-                                {match.name}
-                              </div>
-                            </div>
-                            <div
                               className="flex-[3_1_0%] block text-neutral-300 text-sm"
                               id="record"
                             >
                               <div className="flex items-center mb-[1px]">
-                                <div className="">Team A</div>
+                                <div className="">&nbsp;</div>
                               </div>
                               <div className="flex items-center mb-0">
-                                <div className="">Team B</div>
+                                <div className="">&nbsp;</div>
                               </div>
                             </div>
                             <div className="" id="state disabled"></div>

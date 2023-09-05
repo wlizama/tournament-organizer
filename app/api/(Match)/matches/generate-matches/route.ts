@@ -55,7 +55,7 @@ export async function PATCH(request: Request) {
 
 function seedParticipants(seeding: any, firstRoundMatches: any) {
   const seedingLength = seeding.length;
-  const matchups = generateMatchups(seedingLength);
+  const matchups = generateSingleEliminationMatchups(seedingLength);
   const opponentsList = [];
 
   for (let i = 0; i < matchups.length; i++) {
@@ -64,56 +64,78 @@ function seedParticipants(seeding: any, firstRoundMatches: any) {
     const participant2 = seeding[seed2 - 1];
 
     if (participant1 && participant2) {
-      opponentsList.push({
-        matchId: firstRoundMatches[i].id,
-        opponents: [
-          {
-            number: seed1,
-            position: seed1,
-            result: "",
-            rank: null,
-            forfeit: false,
-            score: null,
-            participant: participant1,
-          },
-          {
-            number: seed2,
-            position: seed2,
-            result: "",
-            rank: null,
-            forfeit: false,
-            score: null,
-            participant: participant2,
-          },
-        ],
-      });
+      const opponents = [];
+      if (participant1.started !== true) {
+        opponents.push({
+          number: seed1,
+          position: seed1,
+          result: "",
+          rank: null,
+          forfeit: false,
+          score: null,
+          participant: participant1,
+        });
+      }
+      if (participant2.started !== true) {
+        opponents.push({
+          number: seed2,
+          position: seed2,
+          result: "",
+          rank: null,
+          forfeit: false,
+          score: null,
+          participant: participant2,
+        });
+      }
+      if (opponents.length > 0) {
+        // Check if opponents array is not empty
+        opponentsList.push({
+          matchId: firstRoundMatches[i].id,
+          opponents,
+        });
+      }
     } else if (participant1 == null && participant2 == null) {
       opponentsList.push({
         matchId: firstRoundMatches[i].id,
-        opponents: [],
+        opponents: [{}, {}],
       });
     } else if (participant1 || participant2) {
-      opponentsList.push({
-        matchId: firstRoundMatches[i].id,
-        opponents: [
-          {
-            number: participant1 ? seed1 : seed2,
-            position: participant1 ? seed1 : seed2,
-            result: "",
-            rank: null,
-            forfeit: false,
-            score: null,
-            participant: participant1 || participant2,
-          },
-        ],
-      });
+      const opponents = [];
+      if (participant1 && participant1.started !== true) {
+        opponents.push({
+          number: seed1,
+          position: seed1,
+          result: "",
+          rank: null,
+          forfeit: false,
+          score: null,
+          participant: participant1,
+        });
+      }
+      if (participant2 && participant2.started !== true) {
+        opponents.push({
+          number: seed2,
+          position: seed2,
+          result: "",
+          rank: null,
+          forfeit: false,
+          score: null,
+          participant: participant2,
+        });
+      }
+      if (opponents.length > 0) {
+        opponentsList.push({
+          matchId: firstRoundMatches[i].id,
+          opponents,
+        });
+      }
     }
   }
 
   return opponentsList;
 }
 
-function generateMatchups(teams: number): [number, number][] {
+function generateSingleEliminationMatchups(teams: number): [number, number][] {
   const matchups: [number, number][] = [];
 
   if (teams === 4) {
