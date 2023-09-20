@@ -1,0 +1,20 @@
+version: '3.9'
+services:
+  db:
+    container_name: estournament-organizer-db
+    image: postgres
+    restart: always
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: estournament-organizer-db
+    volumes:
+      - "estournament-organizer-db-data:/var/lib/postgresql/data"
+    networks:
+      - estournament-organizer-network
+volumes:
+  estournament-organizer-db-data:
+networks:
+  estournament-organizer-network:
