@@ -1,16 +1,12 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
-  // previewFeatures = ["jsonProtocol"]
 }
 
 datasource db {
   provider          = "postgresql"
-  url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
-  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+  url               = env("POSTGRES_PRISMA_URL")
+  directUrl         = env("POSTGRES_URL_NON_POOLING")
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model Account {
@@ -19,15 +15,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -41,17 +36,16 @@ model Session {
 }
 
 model User {
-  id            String       @id @default(uuid())
+  id            String         @id @default(uuid())
   name          String?
-  email         String?      @unique
+  email         String?        @unique
   emailVerified DateTime?
   image         String?
+  accounts      Account[]
+  MatchReport   MatchReport[]
+  Registration  Registration[]
+  sessions      Session[]
   tournaments   Tournament[]
-
-  accounts     Account[]
-  sessions     Session[]
-  Registration Registration[]
-  MatchReport  MatchReport[]
 }
 
 model VerificationToken {
@@ -62,71 +56,63 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// TOURNAMENT
-
 model Tournament {
-  id                   String     @id @default(uuid())
-  discipline           Discipline @relation(fields: [disciplineId], references: [id])
-  disciplineId         String
-  name                 String     @db.VarChar(30)
-  full_name            String?    @db.VarChar(80)
-  description          String?
-  rules                String?
-  status               String     @default("pending")
-  participant_type     String
-  organization         String?
-  contact              String?
-  discord              String?
-  website              String?
-  online               Boolean?
-  location             String?
-  country              String?
-  size                 Int
-  prize                String?
-  scheduled_date_start String?
-  scheduled_date_end   String?
-  timezone             String
-  public               Boolean?
-  // logo
-  platforms            String[]
-  featured             Boolean    @default(false)
-  archived             Boolean    @default(false)
-  match_report_enabled Boolean    @default(false)
-
-  // Registration
-  registration_enabled                   Boolean @default(false)
+  id                                     String         @id @default(uuid())
+  disciplineId                           String
+  name                                   String         @db.VarChar(30)
+  full_name                              String?        @db.VarChar(80)
+  description                            String?
+  rules                                  String?
+  status                                 String         @default("pending")
+  participant_type                       String
+  organization                           String?
+  contact                                String?
+  discord                                String?
+  website                                String?
+  online                                 Boolean?
+  location                               String?
+  country                                String?
+  size                                   Int
+  prize                                  String?
+  scheduled_date_start                   String?
+  scheduled_date_end                     String?
+  timezone                               String
+  public                                 Boolean?
+  platforms                              String[]
+  featured                               Boolean        @default(false)
+  archived                               Boolean        @default(false)
+  match_report_enabled                   Boolean        @default(false)
+  registration_enabled                   Boolean        @default(false)
   registration_opening_datetime          String?
   registration_closing_datetime          String?
-  registration_auto_accept               Boolean @default(false)
-  registration_notification_enabled      Boolean @default(false)
-  registration_participant_email_enabled Boolean @default(false)
+  registration_auto_accept               Boolean        @default(false)
+  registration_notification_enabled      Boolean        @default(false)
+  registration_participant_email_enabled Boolean        @default(false)
   registration_request_message           String?
   registration_acceptance_message        String?
   registration_refusal_message           String?
-  registration_terms_enabled             Boolean @default(false)
+  registration_terms_enabled             Boolean        @default(false)
   registration_terms_url                 String?
-  registration_permanent_team_mandatory  Boolean @default(false)
-
-  // Participant
-  check_in_enabled                    Boolean @default(false)
-  check_in_participant_enabled        Boolean @default(false)
-  check_in_participant_start_datetime String?
-  check_in_participant_end_datetime   String?
-  team_min_size                       Int
-  team_max_size                       Int
-
-  created_at   DateTime       @default(now())
-  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String
-  participants Participant[]
-  Stage        Stage[]
-  Group        Group[]
-  Round        Round[]
-  Bracket      Bracket[]
-  Ranking      Ranking[]
-  Registration Registration[]
-  Match        Match[]
-  MatchReport  MatchReport[]
+  registration_permanent_team_mandatory  Boolean        @default(false)
+  check_in_enabled                       Boolean        @default(false)
+  check_in_participant_enabled           Boolean        @default(false)
+  check_in_participant_start_datetime    String?
+  check_in_participant_end_datetime      String?
+  team_min_size                          Int
+  team_max_size                          Int
+  created_at                             DateTime       @default(now())
+  userId                                 String
+  Bracket                                Bracket[]
+  Group                                  Group[]
+  Match                                  Match[]
+  MatchReport                            MatchReport[]
+  participants                           Participant[]
+  Ranking                                Ranking[]
+  Registration                           Registration[]
+  Round                                  Round[]
+  Stage                                  Stage[]
+  discipline                             Discipline     @relation(fields: [disciplineId], references: [id])
+  user                                   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Discipline {
@@ -141,11 +127,8 @@ model Discipline {
 
 model Registration {
   id                     String      @id @default(uuid())
-  tournament             Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId           String
-  participant            Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
   participantId          String
-  user                   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                 String
   custom_user_identifier String?     @db.VarChar(100)
   email                  String?     @db.VarChar(180)
@@ -155,6 +138,9 @@ model Registration {
   custom_fields          Json
   created_at             DateTime    @default(now())
   lineup                 Json[]
+  participant            Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  tournament             Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  user                   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Participant {
@@ -166,18 +152,15 @@ model Participant {
   checked_in             Boolean        @default(false)
   created_at             DateTime       @default(now())
   type                   String         @default("team")
-  tournament             Tournament     @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId           String
   lineup                 Json[]
-  Registration           Registration[]
   MatchReport            MatchReport[]
+  tournament             Tournament     @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  Registration           Registration[]
 }
-
-// STRUCTURE 
 
 model Stage {
   id                     String     @id @default(uuid())
-  tournament             Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId           String
   number                 Int
   name                   String     @db.VarChar(30)
@@ -186,37 +169,35 @@ model Stage {
   settings               Json
   match_settings         Json?
   auto_placement_enabled Boolean    @default(false)
-  Group                  Group[]
-  Round                  Round[]
   Bracket                Bracket[]
-  Ranking                Ranking[]
+  Group                  Group[]
   Match                  Match[]
+  Ranking                Ranking[]
+  Round                  Round[]
+  tournament             Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
 }
 
 model Group {
   id             String     @id @default(uuid())
-  stage          Stage      @relation(fields: [stageId], references: [id], onDelete: Cascade)
   stageId        String
   number         Int
   name           String     @db.VarChar(30)
   closed         Boolean    @default(false)
   settings       Json
   match_settings Json
-  tournament     Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId   String
-  Round          Round[]
   Bracket        Bracket[]
-  Ranking        Ranking[]
+  stage          Stage      @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  tournament     Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   Match          Match[]
+  Ranking        Ranking[]
+  Round          Round[]
 }
 
 model Round {
   id             String     @id @default(uuid())
-  stage          Stage      @relation(fields: [stageId], references: [id], onDelete: Cascade)
   stageId        String
-  group          Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId        String
-  tournament     Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId   String
   number         Int
   name           String     @db.VarChar(30)
@@ -225,17 +206,16 @@ model Round {
   match_settings Json
   Bracket        Bracket[]
   Match          Match[]
+  group          Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  stage          Stage      @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  tournament     Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
 }
 
 model Bracket {
   id                 String     @id @default(uuid())
-  tournament         Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId       String
-  stage              Stage      @relation(fields: [stageId], references: [id], onDelete: Cascade)
   stageId            String
-  group              Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId            String
-  round              Round      @relation(fields: [roundId], references: [id], onDelete: Cascade)
   roundId            String
   number             Int
   type               String
@@ -245,11 +225,14 @@ model Bracket {
   depth              Int
   branch             String?
   opponents          Json[]
+  group              Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  round              Round      @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  stage              Stage      @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  tournament         Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
 }
 
 model Ranking {
   id           String     @id @default(uuid())
-  group        Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId      String
   number       Int
   position     Int
@@ -257,21 +240,17 @@ model Ranking {
   participant  Json
   points       Int
   properties   Json
-  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId String
-  stage        Stage      @relation(fields: [stageId], references: [id], onDelete: Cascade)
   stageId      String
+  group        Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  stage        Stage      @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
 }
-
-// MATCH 
 
 model Match {
   id                 String        @id @default(uuid())
-  stage              Stage         @relation(fields: [stageId], references: [id], onDelete: Cascade)
   stageId            String
-  group              Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId            String
-  round              Round         @relation(fields: [roundId], references: [id], onDelete: Cascade)
   roundId            String
   number             Int
   type               String
@@ -284,8 +263,11 @@ model Match {
   report_closed      Boolean       @default(false)
   report_status      String?       @default("report")
   opponents          Json[]
-  tournament         Tournament    @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId       String
+  group              Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  round              Round         @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  stage              Stage         @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  tournament         Tournament    @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   MatchReport        MatchReport[]
 }
 
@@ -298,7 +280,6 @@ model MatchGame {
 
 model MatchReport {
   id            String      @id @default(uuid())
-  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
   participantId String
   type          String      @default("report")
   report        Json
@@ -306,9 +287,10 @@ model MatchReport {
   closed_at     DateTime?
   note          String?
   userId        String?
-  tournament    Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId  String
-  match         Match       @relation(fields: [matchId], references: [id], onDelete: Cascade)
   matchId       String
+  match         Match       @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  tournament    Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   User          User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
