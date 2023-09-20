@@ -32,6 +32,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.45.4",
     "react-icons": "^4.10.1",
+    "react-select": "^5.7.4",
     "react-select-country-list": "^2.2.3",
     "react-timezone-select": "^2.1.2",
     "swr": "^2.1.5",
