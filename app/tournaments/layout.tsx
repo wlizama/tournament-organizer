@@ -1,5 +1,5 @@
-import TournamentNavigation from "@/components/navigation/tournament-navigation";
-import SidebarNavigation from "@/components/navigation/tournament-navigation";
+// import TournamentNavigation from "@/components/navigation/tournament-navigation";
+// import SidebarNavigation from "@/components/navigation/tournament-navigation";
 
 interface TournamentsLayoutProps {
   children: React.ReactNode;

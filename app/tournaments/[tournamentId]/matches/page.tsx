@@ -1,4 +1,4 @@
-import { UpdateSuccess } from "@/components/updateSuccess";
+// import UpdateSuccess from "@/components/updateSuccess";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 
@@ -52,7 +52,7 @@ export default async function Matches({ params }: Params) {
         <h1 className="text-3xl font-semibold">Matches</h1>
       </div>
 
-      <UpdateSuccess />
+      {/* <UpdateSuccess /> */}
 
       <div className="ring-1 ring-gray-300 sm:mx-0 rounded bg-white">
         <div className="min-w-full divide-y divide-gray-300">

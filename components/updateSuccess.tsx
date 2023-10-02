@@ -3,7 +3,7 @@
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { useEffect, useState } from "react";
 
-export function UpdateSuccess() {
+export default function UpdateSuccess() {
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
 
   useEffect(() => {

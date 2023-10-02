@@ -17,7 +17,7 @@ import { Group, Match, Round, Stage } from "@prisma/client";
 
 import { Controller, useForm } from "react-hook-form";
 import { RadioGroup } from "@headlessui/react";
-import { UpdateSuccess } from "./updateSuccess";
+// import UpdateSuccess from "./updateSuccess";
 import Link from "next/link";
 
 function classNames(...classes: string[]) {
@@ -140,7 +140,7 @@ export default function MatchForm({ match }: MatchProps) {
             {match.round.number}.{match.number}
           </h1>
         </div>
-        <UpdateSuccess />
+        {/* <UpdateSuccess /> */}
         <div className="shadow sm:mx-0 rounded bg-white">
           <div className="relative grid grid-flow-row p-5 gap-5">
             {/* SECONDARY */}
