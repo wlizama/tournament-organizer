@@ -9,17 +9,14 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="flex flex-col justify-center min-h-full bg-[#111]">
-      <div className="flex justify-center items-center w-full flex-1 self-center p-6 flex-col relative">
-        <div className="max-w-md text-center mb-1 block">
-          <h1 className="text-2xl font-bold tracking-tight text-white">
-            Log in to{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
-              Astrant.gg
-            </span>
+    <div className="pattern-bg bg-repeat h-screen flex justify-center items-center bg-indigo-950">
+      <div className="bg-white p-8 rounded-lg shadow-md w-96 text-center">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-pink-500">
+          Tournament Organizer
           </h1>
-        </div>
-        <span className="block w-[1px] h-[1px] min-w-[1px] min-h-[1px] ml-6 mt-6"></span>
+          <h2 className="text-2xl my-4 tracking-tight">
+            Log in
+          </h2>
         <UserAuthForm />
       </div>
     </div>
