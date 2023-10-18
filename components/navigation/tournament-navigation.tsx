@@ -175,7 +175,6 @@ export function TournamentNavigation({ stages, params }: Props) {
                     </button>
                   </div>
                 </Transition.Child>
-                {/* Sidebar component, swap this element with another sidebar if you like */}
                 <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-[#111] px-6 pb-2 ring-1 ring-white/10">
                   <div className="flex h-16 shrink-0 items-center">
                     <img
@@ -214,9 +213,7 @@ export function TournamentNavigation({ stages, params }: Props) {
         </Dialog>
       </Transition.Root>
 
-      {/* Static sidebar for desktop */}
       <div className="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col">
-        {/* Sidebar component, swap this element with another sidebar if you like */}
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-[#111] px-6">
           <div className="flex h-16 shrink-0 items-center">
             <h1 className="text-white text-2xl font-bold">Organizer</h1>
@@ -270,7 +267,6 @@ export function TournamentNavigation({ stages, params }: Props) {
                               <Disclosure.Panel as="ul" className="mt-1 px-2">
                                 {item.children?.map((subItem) => (
                                   <li key={subItem.name}>
-                                    {/* 44px */}
                                     <Disclosure.Button
                                       as="a"
                                       href={subItem.href}

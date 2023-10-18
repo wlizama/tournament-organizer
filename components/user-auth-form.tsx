@@ -39,7 +39,7 @@ export function UserAuthForm() {
               </svg>
             </span>
           )}
-          Continue with Discord
+          Continuar con Discord
         </button>
       </span>
       <span className="block w-[1px] h-[1px] min-w-[1px] min-h-[1px] ml-6 mt-[11px]"></span>
@@ -69,7 +69,7 @@ export function UserAuthForm() {
               </svg>
             </span>
           )}
-          Continue with Google
+          Continuar con Google
         </button>
       </span>
       <span className="mt-[11px] block w-[1px] h-[1px] min-w-[1px] min-h-[1px] ml-6"></span>
