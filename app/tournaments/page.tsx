@@ -4,8 +4,9 @@ import { getServerSession } from 'next-auth'
 import TournamentList from '@/components/tournament-list'
 import { authOptions } from '@/lib/auth'
 
-export default async function Tournaments() {
+export default async function Tournaments({ lang }) {
   const session = await getServerSession(authOptions)
+  console.log('lang', lang)
 
   return (
     <div className='px-4 sm:px-6 lg:px-8'>
