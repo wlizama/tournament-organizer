@@ -46,7 +46,6 @@ module.exports = {
         commonjs: true
       }],
       'import/newline-after-import': 'error',
-  
       '@typescript-eslint/naming-convention': [
         'error',
         {
@@ -58,6 +57,12 @@ module.exports = {
           }
         }
       ],
+      'padding-line-between-statements': [
+        'error',
+        { blankLine: 'always', prev: '*', next: 'return' },
+      ],
+      '@typescript-eslint/strict-boolean-expressions': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
     },
   }
   

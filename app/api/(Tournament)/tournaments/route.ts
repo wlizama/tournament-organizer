@@ -1,13 +1,14 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-
-import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
 
 // Retrive the tournaments you organize and have organized
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
+    console.log('here', 'me');
+
 
     if (!session) {
       return new Response("Unauthorized", { status: 403 });
@@ -78,11 +79,11 @@ export async function POST(request: Request) {
             id: discipline,
           },
         },
-        name: name,
+        name,
         participant_type: participantType,
-        size: size,
-        timezone: timezone,
-        platforms: platforms,
+        size,
+        timezone,
+        platforms,
         team_min_size: min,
         team_max_size: max,
         user: { connect: { id: user.id } },

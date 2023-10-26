@@ -1,51 +1,51 @@
-import Link from "next/link";
+import Link from 'next/link'
 
 interface Params {
   params: {
-    tournamentId: string;
-  };
+    tournamentId: string
+  }
 }
 
 export default function Tournament({ params }: Params) {
   return (
-    <div className="">
-      <div className="relative my-10">
-        <h1 className="text-3xl font-semibold">Overview</h1>
+    <div className=''>
+      <div className='relative my-10'>
+        <h1 className='text-3xl font-semibold'>Visión general</h1>
       </div>
-      <div className="font-medium space-y-2">
-        <div className="">
+      <div className='font-medium space-y-2'>
+        <div className=''>
           <Link
             href={`/tournaments/${params.tournamentId}/settings`}
-            className="underline"
+            className='underline'
           >
-            Settings
+            Ajustes
           </Link>
         </div>
-        <div className="">
+        <div className=''>
           <Link
             href={`/tournaments/${params.tournamentId}/stages`}
-            className="underline"
+            className='underline'
           >
-            Structure
+            Estructuras
           </Link>
         </div>
-        <div className="">
+        <div className=''>
           <Link
             href={`/tournaments/${params.tournamentId}/placement`}
-            className="underline"
+            className='underline'
           >
-            Placement
+            Posicionamiento
           </Link>
         </div>
-        <div className="">
+        <div className=''>
           <Link
             href={`/tournaments/${params.tournamentId}/matches`}
-            className="underline"
+            className='underline'
           >
-            Matches
+            Partidas
           </Link>
         </div>
       </div>
     </div>
-  );
+  )
 }

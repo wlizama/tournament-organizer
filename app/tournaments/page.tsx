@@ -4,16 +4,15 @@ import { getServerSession } from 'next-auth'
 import TournamentList from '@/components/tournament-list'
 import { authOptions } from '@/lib/auth'
 
-export default async function Tournaments({ lang }) {
+export default async function Tournaments() {
   const session = await getServerSession(authOptions)
-  console.log('lang', lang)
 
   return (
     <div className='px-4 sm:px-6 lg:px-8'>
       <div className='sm:flex sm:items-center my-8'>
         <div className='sm:flex-auto'>
           <h1 className='text-4xl font-medium leading-6 text-gray-900'>
-            Welcome {session?.user.name}
+            Bienvenido {session?.user.name}
           </h1>
         </div>
         <div className='sm:ml-16 sm:mt-0 sm:flex-none'>
@@ -23,7 +22,7 @@ export default async function Tournaments({ lang }) {
             className='flex gap-2 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
           >
             <PlusIcon className='h-5 w-5' />
-            Create
+            Crear
           </Link>
         </div>
       </div>
