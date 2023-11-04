@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { Combobox } from "@headlessui/react";
-import useSWR from "swr";
-import { Discipline } from "@prisma/client";
+import { Combobox } from '@headlessui/react'
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
+// import { Discipline } from '@prisma/client'
+import { useState } from 'react'
+// import useSWR from 'swr'
 
-function classNames(...classes: (string | boolean)[]) {
-  return classes.filter(Boolean).join(" ");
+function classNames(...classes: Array<string | boolean>) {
+  return classes.filter(Boolean).join(' ')
 }
 
 export default function DisciplineComboBox({
@@ -15,12 +15,12 @@ export default function DisciplineComboBox({
   setValue,
   value,
 }: any) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('')
 
   function handleChange(value: any) {
-    setValue(value.id);
-    setPlatform(value.platforms_available);
-    platforms([]);
+    setValue(value.id)
+    setPlatform(value.platforms_available)
+    platforms([])
   }
 
   // disciplines.sort((a: any, b: any) => {
@@ -37,39 +37,41 @@ export default function DisciplineComboBox({
   // });
 
   const filteredDiscipline =
-    query === ""
+    query === ''
       ? disciplines
       : disciplines.filter((discipline: any) => {
-          return discipline.name.toLowerCase().includes(query.toLowerCase());
-        });
+          return discipline.name.toLowerCase().includes(query.toLowerCase())
+        })
 
   return (
-    <Combobox as="div" value={value.id} onChange={handleChange}>
-      <Combobox.Label className="block text-sm">Discipline</Combobox.Label>
-      <div className="relative mt-1">
+    <Combobox as='div' value={value.id} onChange={handleChange}>
+      <Combobox.Label className='block text-sm'>Disciplina</Combobox.Label>
+      <div className='relative mt-1'>
         <Combobox.Input
           required
-          className="w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 focus:border-black focus:outline-none focus:ring-0 focus:ring-black sm:text-sm"
-          onChange={(event) => setQuery(event.target.value)}
+          className='w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 focus:border-black focus:outline-none focus:ring-0 focus:ring-black sm:text-sm'
+          onChange={(event) => {
+            setQuery(event.target.value)
+          }}
           displayValue={(discipline: any) => discipline?.name}
         />
-        <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+        <Combobox.Button className='absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none'>
           <ChevronUpDownIcon
-            className="h-5 w-5 text-gray-400"
-            aria-hidden="true"
+            className='h-5 w-5 text-gray-400'
+            aria-hidden='true'
           />
         </Combobox.Button>
 
         {filteredDiscipline.length > 0 && (
-          <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+          <Combobox.Options className='absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
             {filteredDiscipline.map((discipline: any) => (
               <Combobox.Option
                 key={discipline.id}
                 value={discipline}
                 className={({ active }) =>
                   classNames(
-                    "relative cursor-default select-none py-2 pl-3 pr-9",
-                    active ? "bg-[#111] text-white" : "text-gray-900"
+                    'relative cursor-default select-none py-2 pl-3 pr-9',
+                    active ? 'bg-[#111] text-white' : 'text-gray-900',
                   )
                 }
               >
@@ -77,8 +79,8 @@ export default function DisciplineComboBox({
                   <>
                     <span
                       className={classNames(
-                        "block truncate",
-                        selected && "font-semibold"
+                        'block truncate',
+                        selected && 'font-semibold',
                       )}
                     >
                       {discipline.name}
@@ -87,11 +89,11 @@ export default function DisciplineComboBox({
                     {selected && (
                       <span
                         className={classNames(
-                          "absolute inset-y-0 right-0 flex items-center pr-4",
-                          active ? "text-white" : "text-indigo-600"
+                          'absolute inset-y-0 right-0 flex items-center pr-4',
+                          active ? 'text-white' : 'text-indigo-600',
                         )}
                       >
-                        <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                        <CheckIcon className='h-5 w-5' aria-hidden='true' />
                       </span>
                     )}
                   </>
@@ -102,5 +104,5 @@ export default function DisciplineComboBox({
         )}
       </div>
     </Combobox>
-  );
+  )
 }

@@ -1,13 +1,13 @@
 interface ParticipantSettingsLayoutProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 export const metadata = {
-  title: "Registration Settings",
-};
+  title: 'Configuración de registro',
+}
 
 export default async function ParticipantSettingsLayout({
   children,
 }: ParticipantSettingsLayoutProps) {
-  return <>{children}</>;
+  return <>{children}</>
 }

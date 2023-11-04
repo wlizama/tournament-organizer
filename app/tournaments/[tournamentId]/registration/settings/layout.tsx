@@ -1,13 +1,13 @@
 interface RegistrationSettingsLayoutProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 export const metadata = {
-  title: "Registration Settings",
-};
+  title: 'Configuración de registro',
+}
 
 export default async function RegistrationSettingsLayout({
   children,
 }: RegistrationSettingsLayoutProps) {
-  return <>{children}</>;
+  return <>{children}</>
 }
