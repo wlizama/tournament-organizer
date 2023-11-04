@@ -1,21 +1,21 @@
 version: '3.9'
 services:
-  app:
-    container_name: estournament-organizer-app
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ./:/app
-      - /app/node_modules
-    ports:
-      - '3003:3000'
-    networks:
-      - estournament-organizer-network
-    environment:
-      - DATABASE_URL=postgresql://postgres:password@localhost:5433/estournament-organizer-db
-    depends_on:
-      - db
+  # app:
+  #   container_name: estournament-organizer-app
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./:/app
+  #     - /app/node_modules
+  #   ports:
+  #     - '3003:3000'
+  #   networks:
+  #     - estournament-organizer-network
+  #   environment:
+  #     - DATABASE_URL=postgresql://postgres:password@localhost:5433/estournament-organizer-db
+  #   depends_on:
+  #     - db
   db:
     container_name: estournament-organizer-db
     image: postgres
