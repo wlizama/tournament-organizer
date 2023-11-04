@@ -401,7 +401,7 @@ export default function RegistrationSettings({
                                 htmlFor='yes'
                                 className='ml-3 block text-sm leading-6 text-gray-900'
                               >
-                                Sy
+                                Si
                               </label>
                             </div>
                             <div className='flex items-center'>

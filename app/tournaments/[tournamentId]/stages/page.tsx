@@ -110,11 +110,11 @@ export default async function Structure({ params }: Params) {
                 {stage.number}. {stage.name}
               </h3>
               <dl className='mt-1 flex flex-grow flex-col justify-between'>
-                <dt className='sr-only'>Stage Type</dt>
+                <dt className='sr-only'>Tipo de fase</dt>
                 <dd className='text-sm text-gray-500'>
                   {stageTypes[stage.type].name}
                 </dd>
-                <dt className='sr-only'>Configure</dt>
+                <dt className='sr-only'>Configurar</dt>
                 <dd className='flex mt-3 justify-center items-center'>
                   <Link
                     href={`/tournaments/${params.tournamentId}/stages/${stage.id}/edit`}
@@ -123,7 +123,7 @@ export default async function Structure({ params }: Params) {
                       type='button'
                       className='rounded bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-600 shadow-sm hover:bg-neutral-100'
                     >
-                      Configure
+                      Configurar
                     </button>
                   </Link>
                   <StageOptions
@@ -142,7 +142,7 @@ export default async function Structure({ params }: Params) {
           <li>
             <div className='flex flex-1 flex-col p-5'>
               <TbPlus className='mx-auto h-32 w-32 flex-shrink-0 text-neutral-600' />
-              <h3 className='mt-4 text-lg text-gray-900'>Create new stage</h3>
+              <h3 className='mt-4 text-lg text-gray-900'>Crear nueva fase</h3>
             </div>
           </li>
         </Link>
