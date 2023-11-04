@@ -1,0 +1,54 @@
+# Dependencias
+node_modules
+.yarn
+.yarn-cache
+
+# Build
+.next
+out
+dist
+build
+
+# Archivos de entorno
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Sistema de archivos
+.DS_Store
+Thumbs.db
+
+# Configuraciones de IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Archivos de registro
+*.log
+npm-debug.log
+yarn-error.log
+
+# Directorios específicos de OS o Editor
+__MACOSX
+
+# Archivos de cache
+*.cache
+.cache
+
+# Archivos de prueba
+*.spec.ts
+*.test.ts
+*.spec.tsx
+*.test.tsx
+tests/
+coverage/
+
+# Otros archivos y directorios
+.git
+.gitignore
+*.md
+LICENSE
+.dockerignore
+*.config.js
