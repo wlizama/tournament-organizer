@@ -41,16 +41,17 @@ type MatchOption = Record<
 >
 
 const verboseNames: Record<string, string> = {
-  calculation: 'Calculation',
-  interrupt: 'Automatically end the match when a winner is known?',
-  nb_match_sets: 'Maximum number of games',
+  calculation: 'Cálculo',
+  interrupt:
+    '¿Terminar automáticamente el partido cuando se conoce un ganador?',
+  nb_match_sets: 'Número máximo de partidas',
 }
 const descriptions: Record<string, string> = {
-  none: 'Set every score and result manually',
+  none: 'Establecer manualmente cada puntuación y resultado',
   score:
-    'Set the games scores and the system calculates the games results. The match score is the number of games won and determines the match winner.',
+    'Establezca la puntuación de los partidos y el sistema calculará los resultados de los partidos. La puntuación del partido es el número de partidas ganadas y determina el ganador del partido.',
   outcome:
-    'Set the games results. The match score is calculated from the number of games won and determines the match winner.',
+    'Establece los resultados de los partidos. La puntuación del partido se calcula a partir del número de partidas ganadas y determina el ganador del partido.',
 }
 
 export function DoubleEliminationConfig({
@@ -88,17 +89,17 @@ export function DoubleEliminationConfig({
       calculation: [
         {
           value: 'none',
-          label: 'None',
+          label: 'Ninguno',
           description: descriptions.none,
         },
         {
           value: 'score',
-          label: 'Score-based',
+          label: 'Según puntuación',
           description: descriptions.score,
         },
         {
           value: 'outcome',
-          label: 'Result-based',
+          label: 'Según resultados',
           description: descriptions.outcome,
         },
       ],
@@ -107,12 +108,12 @@ export function DoubleEliminationConfig({
       calculation: [
         {
           value: 'none',
-          label: 'None',
+          label: 'Ninguna',
           description: descriptions.none,
         },
         {
           value: 'score',
-          label: 'Score-based',
+          label: 'Según puntuación',
           description: descriptions.score,
         },
       ],
@@ -123,17 +124,17 @@ export function DoubleEliminationConfig({
       calculation: [
         {
           value: 'none',
-          label: 'None',
+          label: 'Ninguna',
           description: descriptions.none,
         },
         {
           value: 'score',
-          label: 'Score-based',
+          label: 'Según puntuación',
           description: descriptions.score,
         },
         {
           value: 'outcome',
-          label: 'Result-based',
+          label: 'Según resultados',
           description: descriptions.outcome,
         },
       ],
@@ -143,17 +144,17 @@ export function DoubleEliminationConfig({
       calculation: [
         {
           value: 'none',
-          label: 'None',
+          label: 'Ninguna',
           description: descriptions.none,
         },
         {
           value: 'score',
-          label: 'Score-based',
+          label: 'Según puntuación',
           description: descriptions.score,
         },
         {
           value: 'outcome',
-          label: 'Result-based',
+          label: 'Según resultados',
           description: descriptions.outcome,
         },
       ],
@@ -197,11 +198,11 @@ export function DoubleEliminationConfig({
   function validateNumber(value: number) {
     if (stage) {
       if (value !== stage.number && stageNumbers.includes(Number(value))) {
-        return 'This stage number is already taken in this tournament'
+        return 'Este número de etapa ya está ocupado en este torneo'
       }
     } else {
       if (stageNumbers.includes(Number(value))) {
-        return 'This stage number is already taken in this tournament'
+        return 'Este número de etapa ya está ocupado en este torneo'
       }
     }
 
@@ -302,11 +303,11 @@ export function DoubleEliminationConfig({
     <div className='mx-auto max-w-4xl'>
       <div className='relative my-10'>
         <h1 className='text-3xl font-medium'>
-          Configure stage
+          Configurar fase
           {stage ? (
             <span> &quot;{stage.name}&quot;</span>
           ) : (
-            <span>: Double Elimination</span>
+            <span>: Eliminación Doble</span>
           )}
         </h1>
       </div>
@@ -321,7 +322,7 @@ export function DoubleEliminationConfig({
             </div>
             <div className='ml-3'>
               <p className='text-sm font-medium text-green-800'>
-                Successfully updated
+                Actualizado correctamente
               </p>
             </div>
           </div>
@@ -333,9 +334,11 @@ export function DoubleEliminationConfig({
             <Tabs defaultValue='general' className='w-full mt-2'>
               <TabsList className='max-w-full sm:w-auto justify-start overflow-x-auto'>
                 <TabsTrigger value='general'>General</TabsTrigger>
-                <TabsTrigger value='advanced'>Advanced</TabsTrigger>
+                <TabsTrigger value='advanced'>Avanzado</TabsTrigger>
                 <TabsTrigger value='placement'>Posicionamiento</TabsTrigger>
-                <TabsTrigger value='match-settings'>Match Settings</TabsTrigger>
+                <TabsTrigger value='match-settings'>
+                  Ajustes de encuentro
+                </TabsTrigger>
               </TabsList>
               <TabsContent value='general'>
                 <div className='grid grid-cols-1 xl:grid-cols-2 xl:divide-x mt-6'>
@@ -346,7 +349,7 @@ export function DoubleEliminationConfig({
                           htmlFor='number'
                           className='block text-sm leading-6 text-gray-900'
                         >
-                          Number
+                          Número
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger disabled>
@@ -354,9 +357,9 @@ export function DoubleEliminationConfig({
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p className='w-80'>
-                                  Number used to determine the order of the
-                                  stages in the tournament. Two stages can not
-                                  have the same number.
+                                  Número empleado para determinar el orden de
+                                  las fases en el torneo. Dos fases no pueden
+                                  tener el mismo número.
                                 </p>
                               </TooltipContent>
                             </Tooltip>
@@ -395,9 +398,9 @@ export function DoubleEliminationConfig({
                           htmlFor='name'
                           className='block text-sm leading-6 text-gray-900'
                         >
-                          Name{' '}
+                          Nombre{' '}
                           <span className='text-xs text-neutral-500 font-light'>
-                            (maximum 30 characters)
+                            (30 caracteres máximo)
                           </span>
                         </label>
                         <input
@@ -421,7 +424,7 @@ export function DoubleEliminationConfig({
                         htmlFor='size'
                         className='block text-sm leading-6 text-gray-900'
                       >
-                        Size
+                        Tamaño
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger disabled>
@@ -429,8 +432,7 @@ export function DoubleEliminationConfig({
                             </TooltipTrigger>
                             <TooltipContent>
                               <p className='w-80'>
-                                Number of participants at the beginning of the
-                                stage.
+                                Número de participantes al comienzo de la fase.
                               </p>
                             </TooltipContent>
                           </Tooltip>
@@ -457,7 +459,7 @@ export function DoubleEliminationConfig({
                         htmlFor='grand-final'
                         className='block text-sm leading-6 text-gray-900'
                       >
-                        Enable Grand Final?
+                        ¿Habilitar gran final?
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger disabled>
@@ -465,8 +467,8 @@ export function DoubleEliminationConfig({
                             </TooltipTrigger>
                             <TooltipContent>
                               <p className='w-80'>
-                                Specify the type of Grand Final you want in this
-                                Double Elimination stage.
+                                Especifica el tipo de gran final que quieres en
+                                esta fase de doble eliminación.
                               </p>
                             </TooltipContent>
                           </Tooltip>
@@ -484,15 +486,15 @@ export function DoubleEliminationConfig({
                           })
                         }}
                       >
-                        <option value={'none'}>None</option>
+                        <option value={'none'}>Ninguna</option>
                         <option value={'simple'}>Simple</option>
-                        <option value={'double'}>Double</option>
+                        <option value={'double'}>Doble</option>
                       </select>
                     </div>
 
                     <div className='pb-2'>
                       <label className='text-sm text-gray-900'>
-                        Skip first round?
+                        ¿Omitir primera serie?
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger disabled>
@@ -500,17 +502,20 @@ export function DoubleEliminationConfig({
                             </TooltipTrigger>
                             <TooltipContent>
                               <p className='w-80'>
-                                If the first round is skipped, half the
-                                participants will start in the winner bracket
-                                (higher seeds), and half will start in the loser
-                                bracket (lower seeds).
+                                Si la primera serie se omite, la mitad de los
+                                participantes comenzarán en la ronda de
+                                ganadores (clasificaciones más altas), y la
+                                mitad comenzará en la ronda de perdedores
+                                (clasificaciones más bajas).
                               </p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
                       </label>
                       <fieldset>
-                        <legend className='sr-only'>Skip first round?</legend>
+                        <legend className='sr-only'>
+                          ¿Omitir primera serie?
+                        </legend>
                         <div className='mt-2 sm:flex sm:items-center sm:space-x-5 sm:space-y-0'>
                           <div className='flex items-center'>
                             <input
@@ -530,7 +535,7 @@ export function DoubleEliminationConfig({
                               htmlFor='yes'
                               className='ml-3 block text-sm leading-6 text-gray-900'
                             >
-                              Yes
+                              Si
                             </label>
                           </div>
                           <div className='flex items-center'>
@@ -568,7 +573,7 @@ export function DoubleEliminationConfig({
                         htmlFor='threshold'
                         className='block text-sm leading-6 text-gray-900'
                       >
-                        Threshold
+                        Umbral
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger disabled>
@@ -576,9 +581,9 @@ export function DoubleEliminationConfig({
                             </TooltipTrigger>
                             <TooltipContent>
                               <p className='w-80'>
-                                Number of participants that will get qualified
-                                at the end of this stage. Will remove the
-                                unnecessary matches.
+                                Número de participantes que se clasificarán al
+                                final de esta fase. Se eliminarán los encuentros
+                                innecesarios.
                               </p>
                             </TooltipContent>
                           </Tooltip>
@@ -607,7 +612,7 @@ export function DoubleEliminationConfig({
                   <div className='gap-x-2 space-y-4'>
                     <div className='pb-2 -mt-2'>
                       <label className='text-sm text-gray-900'>
-                        Place participants automatically?
+                        ¿Posicionar participantes automáticamente?
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger disabled>
@@ -615,9 +620,10 @@ export function DoubleEliminationConfig({
                             </TooltipTrigger>
                             <TooltipContent>
                               <p className='w-80'>
-                                If enabled, participants will automatically be
-                                placed in the stage using their creation order
-                                as seeding.
+                                Si se habilita esta opción, los participantes se
+                                posicionarán automáticamente en esta fase usando
+                                su orden de creación como criterio de
+                                clasificación.
                               </p>
                             </TooltipContent>
                           </Tooltip>
@@ -625,7 +631,7 @@ export function DoubleEliminationConfig({
                       </label>
                       <fieldset className='mt-2'>
                         <legend className='sr-only'>
-                          Place participants automatically?
+                          ¿Posicionar participantes automáticamente?
                         </legend>
                         <div className='space-y-4 sm:flex sm:items-center sm:space-x-5 sm:space-y-0'>
                           <div className='flex items-center'>
@@ -643,7 +649,7 @@ export function DoubleEliminationConfig({
                               htmlFor='yes'
                               className='ml-3 block text-sm leading-6 text-gray-900'
                             >
-                              Yes
+                              Si
                             </label>
                           </div>
                           <div className='flex items-center'>
@@ -677,7 +683,7 @@ export function DoubleEliminationConfig({
                       htmlFor='format'
                       className='block text-sm leading-6 text-gray-900'
                     >
-                      Format
+                      Formato
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger disabled>
@@ -685,10 +691,10 @@ export function DoubleEliminationConfig({
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className='w-80'>
-                              Define the match format to be applied to this
-                              element (tournament, stage, group, round or match)
-                              of the tournament, and all elements that depend of
-                              it.
+                              Define el formato de encuentro que quieras aplicar
+                              a este elemento (torneo, fase, grupo, serie o
+                              encuentro) del torneo, y a todos los elementos que
+                              dependan del mismo.
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -702,16 +708,16 @@ export function DoubleEliminationConfig({
                       onChange={handleTypeChange}
                     >
                       <option value='' disabled>
-                        Select a format
+                        Selecciona a formato
                       </option>
                       <option value={'inherited_format'}>
-                        Inherited Format
+                        Formato heredado
                       </option>
-                      <option value={'no_sets'}>No games</option>
-                      <option value={'single_set'}>Single game</option>
-                      <option value={'home_and_away'}>Home and away</option>
-                      <option value={'best_of'}>Best-of</option>
-                      <option value={'fixed_sets'}>Fixed games</option>
+                      <option value={'no_sets'}>Sin partidas</option>
+                      <option value={'single_set'}>Partida única</option>
+                      <option value={'home_and_away'}>Ida y vuelta</option>
+                      <option value={'best_of'}>Mejor de</option>
+                      <option value={'fixed_sets'}>Partidas fijas</option>
                     </select>
                   </div>
 
@@ -755,7 +761,7 @@ export function DoubleEliminationConfig({
                                   htmlFor='yes'
                                   className='ml-3 block text-sm leading-6 text-gray-900'
                                 >
-                                  Yes
+                                  Si
                                 </label>
                               </div>
 
@@ -926,7 +932,7 @@ export function DoubleEliminationConfig({
                     type='button'
                     className='rounded bg-white px-3 py-2 text-sm text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
                   >
-                    Back
+                    Atrás
                   </button>
                   <button
                     type='button'
@@ -934,14 +940,14 @@ export function DoubleEliminationConfig({
                     onClick={updateStageAndBack}
                   >
                     <TbPencil className='h-5 w-5 mr-2' />
-                    Update + Back
+                    Actualizar + Atrás
                   </button>
                   <button
                     type='submit'
                     className='flex items-center rounded bg-[#111] px-3 py-2 text-sm text-white shadow-sm hover:bg-[#333] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
                   >
                     <TbPencil className='h-5 w-5 mr-2' />
-                    Update
+                    Actualizar
                   </button>
                 </>
               ) : (
@@ -950,7 +956,7 @@ export function DoubleEliminationConfig({
                   className='flex items-center rounded bg-[#111] px-3 py-2 text-sm text-white shadow-sm hover:bg-[#333] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
                 >
                   <TbPlus className='h-5 w-5 mr-2' />
-                  Create
+                  Crear
                 </button>
               )}
             </div>
