@@ -18,37 +18,37 @@ async function getStages(tournamentId: string) {
 
 export const stageTypes: Record<string, Record<string, string>> = {
   single_elimination: {
-    name: 'Single Elimination',
+    name: 'Eliminación simple',
     imgUrl:
       'https://organizer.toornament.com/structures/icon_single_elimination.svg?1686061578',
   },
   double_elimination: {
-    name: 'Double Elimination',
+    name: 'Eliminación doble',
     imgUrl:
       'https://organizer.toornament.com/structures/icon_double_elimination.svg?1686903689',
   },
   bracket_groups: {
-    name: 'Bracket Groups',
+    name: 'Guantelete',
     imgUrl:
       'https://organizer.toornament.com/structures/icon_bracket_groups.svg?1686903689',
   },
   pools: {
-    name: 'Round-robin Groups',
+    name: 'Grupo de rondas',
     imgUrl:
       'https://organizer.toornament.com/structures/icon_pools.svg?1686903689',
   },
   gauntlet: {
-    name: 'Gauntlet',
+    name: 'Grupos de robin',
     imgUrl:
       'https://organizer.toornament.com/structures/icon_gauntlet.svg?1686903689',
   },
   league: {
-    name: 'League',
+    name: 'Liga',
     imgUrl:
       'https://organizer.toornament.com/structures/icon_league.svg?1686903689',
   },
   swiss: {
-    name: 'Swiss System',
+    name: 'Sistema suizo',
     imgUrl:
       'https://organizer.toornament.com/structures/icon_swiss.svg?1686903689',
   },
@@ -58,17 +58,17 @@ export const stageTypes: Record<string, Record<string, string>> = {
       'https://organizer.toornament.com/structures/icon_simple.svg?1686903689',
   },
   ffa_single_elimination: {
-    name: 'FFA Single Elimination',
+    name: 'FFA Eliminación directa',
     imgUrl:
       'https://organizer.toornament.com/structures/icon_ffa_single_elimination.svg?1686903689',
   },
   ffa_bracket_groups: {
-    name: 'FFA Bracket Groups',
+    name: 'FFA Grupo de rondas',
     imgUrl:
       'https://organizer.toornament.com/structures/icon_ffa_bracket_groups.svg?1686903689',
   },
   ffa_league: {
-    name: 'FFA League',
+    name: 'Liga FFA',
     imgUrl:
       'https://organizer.toornament.com/structures/icon_ffa_league.svg?1686903689',
   },

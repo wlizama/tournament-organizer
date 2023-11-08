@@ -40,7 +40,7 @@ export function StageSuccessAlert() {
           </div>
           <div className='ml-3'>
             <p className='text-sm font-medium text-green-800'>
-              Creada con éxito una etapa
+              Etapa creada con éxito
             </p>
           </div>
         </div>
@@ -60,7 +60,7 @@ export function StageSuccessAlert() {
           </div>
           <div className='ml-3'>
             <p className='text-sm font-medium text-green-800'>
-              Actualizada con éxito la etapa
+              Etapa actualizada con éxito
             </p>
           </div>
         </div>

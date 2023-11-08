@@ -99,7 +99,7 @@ export default async function StagePlacement({ params }: Params) {
               id='card'
             >
               <div className='p-5 border-b' id='card-header'>
-                <h2 className='text-2xl font-medium'>Seeding</h2>
+                <h2 className='text-2xl font-medium'>Clasificación</h2>
               </div>
               {/* CARD */}
               <SeedForm
@@ -123,7 +123,7 @@ export default async function StagePlacement({ params }: Params) {
               id='card'
             >
               <div className='p-5 border-b' id='card-header'>
-                <h2 className='text-2xl font-medium'>Single Elimination</h2>
+                <h2 className='text-2xl font-medium'>Eliminacion simple</h2>
               </div>
               <div
                 className='flex-1 p-5 overflow-hidden break-words'
